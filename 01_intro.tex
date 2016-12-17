@@ -1,0 +1,37 @@
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\section{Introdução}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A emergência de sistemas que lidam com múltiplos terabytes de dados exigiu que fossem elaboradas novas técnicas para armazenar e processar esses dados. As limitações de tempo, memória e armazenamento, características comuns ao processamento de dados massivos, guiaram a criação de algoritmos e estruturas de dados que levam em conta tais limitações.
+
+Em diversos domínios, armazenar os dados para processá-los posteriormente pode ser inviável. Isto pode ser justificado pelo alto custo de operações em disco ou mesmo pela perda da habilidade de responder rapidamente às mudanças nos dados.
+
+Neste modelo, é preciso deixar de observar os dados como entidades persistentes, mas entendê-los como fluxos, sobre os quais são derivadas análises imediatas \cite{babcock2002models}. Tais fluxos são contínuos, heterogêneos, mutáveis e frequentemente efêmeros. Dado o volume e a natureza virtualmente infinita desses fluxos, é desejável que os algoritmos e estruturas de dados que os processem sejam capazes de computar resultados de forma contínua e em apenas uma passagem, utilizando o mínimo possível de recursos \cite{alon1996space}.
+
+Alguns problemas podem ter algoritmos trivialmente adaptados para funcionar neste modelo de processamento, como o cálculo da média. Outros, entretanto, podem não ser tão adequados. Um exemplo é o problema de calcular a mediana (ou qualquer quantil) em um fluxo de números inteiros, pois o mesmo requer mais de uma passagem pelos dados ou que eles sejam armazenados para computar o resultado. Em \cite{munro1980selection} mostra-se que calcular quantis em uma série com N valores em $p$ passagens pelos dados requer $\Omega(N^{\frac{1}{p}})$ espaço.
+
+Neste trabalho, abordaremos estruturas de dados conhecidas como estruturas de sinopse (\emph{synopsis}) ou esboço (\emph{sketch}) \cite{gibbons1999synopsis}. Neste trabalho iremos nos referir a elas apenas como estruturas de dados probabilísticas. A principal característica destas é utilizar uma quantidade limitada de recursos. Em especial:
+
+\begin{itemize}
+  \item podem residir na memória principal, evitando operações de E/S;
+  \item permitem atualização incremental;
+  \item consomem menos recursos que os dados originais consumiriam, se fossem armazenados;
+  \item podem ser facilmente transmitidas ou armazenadas;
+  \item servem como substitutos de baixo custo dos dados originais, viabilizando alguns tipos de consultas.
+\end{itemize}
+
+Frequentemente, estruturas de sinopse são pequenas demais para representar fielmente os dados originais e permitir uma resposta exata às consultas. Estas estruturas de dados aproximam a resposta com um fator de erro relativo à quantidade de recursos destinados ao processamento.
+
+Em especial, este trabalho foca nas estruturas que se aproveitam da codificação em \emph{hash} dos elementos de um conjunto ou multiconjunto para responder consultas específicas.
+
+O trabalho está organizado da seguinte maneira: na Seção~\ref{sec:concepts}, introduziremos os conceitos básicos necessários para compreender as estruturas que serão apresentadas nas seções seguintes.
+
+Na Seção~\ref{sec:bloom}, abordamos o filtro de Bloom \cite{bloom1970space}, uma estrutura de dados que responde consultas aproximadas de pertinência de elementos em um conjunto utilizando menos memória do que o necessário para armazenar o conjunto inteiro. É característica dos filtros de Bloom que as respostas negativas sejam exatas, enquanto as respostas positivas sejam aproximadas.
+
+Na Seção~\ref{sec:countmin}, consideramos a estrutura probabilística \emph{count-min} \cite{cormode2005improved}, que é análoga aos filtros de Bloom, permitindo estimar não só a pertinência, mas também a frequência de um elemento em um multiconjunto. Analogamente, qualquer frequência estimada pela estrutura é garantidamente maior ou igual à frequência real do elemento no multiconjunto. É também possível empregá-la para estimar quantis em um fluxo de dados. O texto nesta versão ainda está incompleto e será terminado no futuro.
+
+Na Seção~\ref{sec:minhash} introduzimos o \emph{MinHash} \cite{broder1997resemblance}, estrutura que permite estimar a semelhança entre dois conjuntos sem precisar compará-los elemento a elemento.
+
+Na Seção~\ref{sec:hyperloglog}, abordamos a estrutura \emph{HyperLoglog} \cite{flajolet2008hyperloglog}, que responde a cardinalidade aproximada de elementos distintos de um fluxo de dados utilizando memória adicional constante.
+
+Na Seção~\ref{sec:proposed}, discutimos algumas propostas de continuação deste trabalho.
