@@ -191,7 +191,7 @@ Por exemplo, a Figura~\ref{fig:min:prob} mostra o gráfico de erro padrão por f
 
 Muitas vezes, o custo de computar várias funções \emph{hash} pode ser muito alto na prática, especialmente para conjuntos com centenas de milhões de elementos.
 
-Uma variante possível do \emph{MinHash} é utilizar apenas uma função \emph{hash} e manter os $k$ menores resultados em ordem ascendente de $h(x)$ para cada conjunto como assinatura (Algoritmo~\ref{alg:min:hashcompute2}). Denota-se por $h_{(k)}(S)$ o conjunto com $k$ menores hashs do conjunto $S$. 
+Uma variante possível do \emph{MinHash} é utilizar apenas uma função \emph{hash} e manter os $k$ menores resultados em ordem ascendente de $h(x)$ para cada conjunto como assinatura (Algoritmo~\ref{alg:min:hashcompute2}). Denota-se por $h_{(k)}(S)$ o conjunto com $k$ menores hashes do conjunto $S$. 
 
 \begin{algorithm}
 \linespread{1}\selectfont
@@ -429,7 +429,7 @@ Além disso, Rodrigues \cite{rodrigues2013recomendaccao} sugere a utilização d
 
 A detecção de comunidades orgânicas em redes sociais é um problema cada vez mais comum atualmente. O problema pode ser modelado como um caso especial de sistema de recomendação, onde o objetivo é clusterizar nós comuns num grafo por um conjunto de características. 
 
-Macropol e Singh \cite{macropol2010scalable} introduzem em 2010 o algoritmo \emph{Top Graph Clusters} (\emph{TopGC}), utilizando hashs sensíveis a localidade -- especialmente \emph{MinHash} -- para detecção, em tempo linear, de subgrafos altamente conectados. O algoritmo propõe utilizar, como métrica de afinidade entre os nós, a semelhança entre suas vizinhanças.
+Macropol e Singh \cite{macropol2010scalable} introduzem em 2010 o algoritmo \emph{Top Graph Clusters} (\emph{TopGC}), utilizando hashes sensíveis a localidade -- especialmente \emph{MinHash} -- para detecção, em tempo linear, de subgrafos altamente conectados. O algoritmo propõe utilizar, como métrica de afinidade entre os nós, a semelhança entre suas vizinhanças.
 
 Teixeira et al. \cite{teixeira2012min} descrevem como utilizar \emph{MinHash} como função de similaridade, com o objetivo de computar a semelhança entre grafos utilizando poucos recursos.
 

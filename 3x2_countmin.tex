@@ -24,7 +24,7 @@ O vetor e suas atualizações não precisam ser mantidos em memória. A estrutur
 
 \emph{Count-Min Sketch} funciona de forma similar a um filtro de Bloom com contagem, entretanto, em vez de apenas um vetor, a estrutura utiliza uma matriz $M[1..m, 1..k]$, onde cada coluna corresponde a uma função \emph{hash}.
 
-A atualização parte de um par ordenado $(i, c)$, representando um incremento de valor $c$ na $i$-ésima posição do vetor implícito $A$. O algoritmo consiste em incrementar na matriz todas as posições referenciadas pelos hashs calculados em cada um dos seus respectivos vetores (Algoritmo~\ref{alg:countminupdate}). 
+A atualização parte de um par ordenado $(i, c)$, representando um incremento de valor $c$ na $i$-ésima posição do vetor implícito $A$. O algoritmo consiste em incrementar na matriz todas as posições referenciadas pelos hashes calculados em cada um dos seus respectivos vetores (Algoritmo~\ref{alg:countminupdate}). 
 
 \begin{algorithm}
 \linespread{1}\selectfont
