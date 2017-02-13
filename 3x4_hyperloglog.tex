@@ -3,31 +3,23 @@
 \section{\emph{HyperLogLog}}\label{sec:hyperloglog}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-\emph{HyperLogLog} é um algoritmo que permite estimar o número de elementos distintos em um fluxo de dados, utilizando memória sublinear. É possível estimar a cardinalidade de elementos distintos em um conjunto com bilhões de elementos, com 2\% de erro padrão, utilizando apenas 1.5KB de memória.
+Consideremos o problema de determinar a cardinalidade de elementos distintos em um multiconjunto. Na prática, os elementos destes multiconjuntos podem ser identificadores de usuários, endereços IP, pacotes de rede, etc. Geralmente o desejável é encontrar a cardinalidade efetuando apenas uma passagem pelos dados, utilizando o mínimo de memória possível \cite{metwally2008go,clifford2012statistical}. Na Seção~\ref{sec:bloom:cardinality}, discutimos a aplicabilidade dos filtros de Bloom para estimativa de cardinalidade em fluxos de dados. Existem, entretanto, outros algoritmos mais eficientes para este problema, que é recorrente na análise de grandes massas de dados. \emph{HyperLogLog} é um algoritmo que permite estimar o número de elementos distintos em um fluxo de dados, utilizando memória sublinear. É possível estimar a cardinalidade de elementos distintos em um conjunto com bilhões de elementos, com 2\% de erro padrão, utilizando apenas 1,5KB de memória.
 
-Na Seção~\ref{sec:bloom:cardinality}, discutimos a aplicabilidade dos filtros de Bloom para estimativa de cardinalidade em fluxos de dados. Existem, entretanto, outros algoritmos mais eficientes para este problema, que é recorrente na análise de grandes massas de dados.
-
-O problema consiste em determinar a cardinalidade em um multiconjunto. Na prática, os elementos destes multiconjuntos podem ser identificadores de usuários, endereços IP, pacotes de rede, etc. Geralmente o desejável é encontrar a cardinalidade efetuando apenas uma passagem pelos dados, utilizando o mínimo de memória possível \cite{metwally2008go,clifford2012statistical}. 
-
-Um algoritmo determinístico óbvio precisaria de memória proporcional à cardinalidade que se quer estimar. Entretanto, para muitas aplicações é possível relaxar os requisitos de precisão de forma a permitir algoritmos que utilizam menos recursos.
+Um algoritmo determinístico precisaria de memória proporcional ao número de elementos, pois todos precisariam ser armazenados. Entretanto, para muitas aplicações é possível relaxar os requisitos de precisão de forma a permitir algoritmos que utilizam menos recursos.
 
 Apesar de \emph{Linear Counting} \cite{whang1990linear} já ser conhecido desde o início dos anos 90, sua complexidade de memória ainda é linear em relação ao número de elementos do conjunto. Para aplicações com grandes volumes de dados em tempo real, uma solução sublinear se mostra mais apropriada.
 
 Flajolet e Martin \cite{flajolet1985probabilistic}, em seu trabalho seminal na década de 80, descrevem um algoritmo para estimativa de cardinalidade que se baseia na observação do padrão de bits do hash dos elementos. Este trabalho é conhecido como \emph{Probabilistic Counting} e foi fortemente inspirado pela ideia de Morris \cite{morris1978counting} alguns anos antes. 
 
-Em 1996, Alon, Matias e Szegedy \cite{alon1996space} consolidam a teoria para complexidade de tempo e espaço para estimativa de \emph{momentos de frequência}, que são definidos a seguir.
-
-Para um conjunto $A = \{a_1, a_2, \dots, a_n\}$ correspondendo às frequências de elementos de um multiconjunto $S$ com $n$ elementos distintos, o momento de frequêcia $F_k(S)$ é definido como:
+Em 1996, Alon, Matias e Szegedy \cite{alon1996space} consolidam a teoria para complexidade de tempo e espaço para estimativa de \emph{momentos de frequência}, que são definidos a seguir. Para um conjunto $A = \{a_1, a_2, \dots, a_n\}$, onde cada $a_i$ corresponden à frequência de um elemento distinto de um multiconjunto $S$ com $n$ elementos distintos, o momento de frequência $F_k(S)$ é definido como:
 \[
 F_k(S) = \mathlarger{\sum}_{i=1}^n a_i^k
 \]
-Perceba que $F_0$ corresponde à cardinalidade de elementos distintos do multiconjunto. Em \cite{alon1996space}, os autores concluem que $F_0$, $F_1$ e $F_2$ podem ser aproximados com complexidade de espaço logarítmica. 
-
-A partir deste resultado, diversos algoritmos foram desenvolvidos com o objetivo de estimar cardinalidades em multiconjuntos. Os algoritmos se dividem em duas grandes categorias, no que diz respeito ao princípio em que se baseiam \cite{flajolet2008hyperloglog,clifford2012statistical}.
+Perceba que $F_0$ corresponde à cardinalidade de elementos distintos do multiconjunto. Em \cite{alon1996space}, os autores concluem que $F_0$, $F_1$ e $F_2$ podem ser aproximados com complexidade de espaço logarítmica. A partir deste resultado, diversos algoritmos foram desenvolvidos com o objetivo de estimar cardinalidades em multiconjuntos. Os algoritmos se dividem em duas grandes categorias, dependendo se são baseados em estatísticas de ordem ou padrão de bits. \cite{flajolet2008hyperloglog,clifford2012statistical}.
 
 \begin{description}
   \item[Algoritmos baseados em estatísticas de ordem] \hfill \\
-    Baseiam-se na probabilidade de um certo hash ter uma posição específica na ordem definida pela função \emph{hash} escolhida. Por exemplo, se o menor hash entre todos em um conjunto, normalizado no espaço $[0...1]$, for igual a $0.05$, espera-se que a cardinalidade do conjunto seja da ordem de 20. Algoritmos como \emph{K-Minimum Values} \cite{bar2002counting} e \emph{MinCount} \cite{giroire2009order} baseiam-se neste princípio.
+    Baseiam-se na probabilidade de um certo hash ter uma posição específica na ordem definida pela função \emph{hash} escolhida. Por exemplo, se o menor hash entre todos em um conjunto, considerando uma distribuição uniforme no intervalo $[0; 1]$, for igual a $0,05$, espera-se que a cardinalidade do conjunto seja da ordem de 20. Algoritmos como \emph{K-Minimum Values} \cite{bar2002counting} e \emph{MinCount} \cite{giroire2009order} baseiam-se neste princípio.
   
   \item[Algoritmos baseados em padrões de bits] \hfill \\
     Baseiam-se na probabilidade de certos padrões de bits acontecerem no hash de elementos do conjunto. Por exemplo, observando os hashes de uma sequência, se for visto um valor cuja representação binária comece com $0^{p-1}1$, é provável que a cardinalidade seja da ordem de $2^p$. Algoritmos como o já citado \emph{Probabilistic Counting}  \cite{flajolet1985probabilistic}, \emph{LogLog} \cite{durand2003loglog} e \emph{HyperLogLog} \cite{flajolet2008hyperloglog} são desta categoria.
@@ -52,7 +44,22 @@ A função \emph{hash} utilizada no \emph{HyperLogLog} mapeia cada elemento do d
 \Pr(h(x) &= 0^{p-1}1...&) = 2^{-p} \\
 \end{alignat*}
 
-Ao observa-se um valor \emph{hash} com prefixo $0^{p-1}1$ num fluxo, então a cardinalidade com alta probabilidade é da ordem de $2^p$. É importante notar como este conceito é análogo àquele de manter o menor valor \emph{hash} encontrado, do algoritmo \emph{MinCount}  \cite{giroire2009order}.
+Ao observar-se que, sobre todos os \emph{hashes} de elementos do conjunto, o prefixo que possui maior número de 0's iniciando a cadeiaé da forma $0^{p-1}1$ num fluxo, então a cardinalidade com alta probabilidade é $2^p$. É importante notar como este conceito é análogo àquele de manter o menor valor \emph{hash} encontrado, do algoritmo \emph{MinCount}  \cite{giroire2009order}.
+
+O algoritmo consiste em particionar o conjunto aleatoriamente em $m = 2^b$ subconjuntos, usando os $b$ primeiros bits do \emph{hash} de cada elemento e armazenar, para cada subconjunto, o tamanho do maior prefixo $0^{p-1}1$ visto. Estes valores são armazenados em um vector $M$ de $m$ posições. Cada posição do vetor representa um estimador e pode assumir um valor entre $0$ e $\lceil \log n \rceil$.
+
+A estimativa da cardinalidade é feita computando a cardinalidade provável de cada subconjunto e obtendo a média harmônica entre todos os valores. Isto é:
+\[
+    \hat{n} = \alpha_m m^2 \left(\sum_{j=0}^{m-1} 2^{-M[j]}\right)^{-1}
+\]
+
+A constante $\alpha_m$ é introduzida para corrigir um viés multiplicativo sistemático inerente ao cálculo da média harmônica de potências de 2 e é definida como:
+\begin{align*}
+    \alpha_m & = \left( m \int_0^\infty \left( \log_2 \left( \frac{2+u}{1+u} \right) \right)^m du \right) ^ {-1} \\
+             & \approx  0,7213/(1+ 1,079/m) \text{, para } m \geq 128
+\end{align*}
+
+O uso da média harmônica é o grande diferencial do \emph{HyperLogLog} em relação ao seu predecessor \emph{LogLog}. Esta exige uma demonstração teórica mais complexa, porém diminui a variância dos estimadores individuais e permite melhorar a precisão do algoritmo em cerca de 20\% \cite{flajolet2008hyperloglog}. Esta é uma mudança similar à sugerida no trabalho de Chassaing e Lucas \cite{chassaing2007efficient}, que aplica o mesmo tipo de melhoramento ao algoritmo \emph{MinCount}. O Algoritmo~\ref{alg:hll:main} resume o que foi apresentado até agora. 
 
 \begin{algorithm}
 \linespread{1}\selectfont
@@ -61,7 +68,7 @@ Ao observa-se um valor \emph{hash} com prefixo $0^{p-1}1$ num fluxo, então a ca
 \begin{algorithmic}[1]
 \State seja $\rho(w)$ o índice do primeiro bit 1 na representação binária de $w$
 \State seja $b$ o número de bits escolhidos para representar cada subconjunto e $m=2^b$
-\State seja $\alpha_m \approx 0.7213/(1 + 1.079/m)$, para $m \geq 128$
+\State seja $\alpha_m \approx 0,7213/(1 + 1,079/m)$, para $m \geq 128$
 \Function{Estimar-Cardinalidade}{$S$}
     \State $M[0..m-1] \gets 0$
     \For{\text{each} $e \in S$}
@@ -71,7 +78,7 @@ Ao observa-se um valor \emph{hash} com prefixo $0^{p-1}1$ num fluxo, então a ca
         \State $M[j] = \max(M[j], \rho(w))$
     \EndFor
     \State $E \gets \alpha_m m^2 \left(\sum_{j=0}^{m-1} 2^{-M[j]}\right)^{-1}$
-	\If{$E \leq \frac{2}{5}m$}  \algorithmicreturn{ $m\ln(m/|\{0 \leq i < m | M[i]=0\}|)$}
+	\If{$E \leq \frac{5}{2}m$}  \algorithmicreturn{ $m\ln(m/|\{0 \leq i < m | M[i]=0\}|)$}
 	\ElsIf{$E \leq \frac{1}{30}2^{32}$}  \algorithmicreturn{ $E$}
     \Else{ }\algorithmicreturn{ $-2^{32} \ln\left(1 - \frac{E}{2^{32}}\right)$}
     \EndIf
@@ -79,17 +86,9 @@ Ao observa-se um valor \emph{hash} com prefixo $0^{p-1}1$ num fluxo, então a ca
 \end{algorithmic}
 \end{algorithm}
 
-O Algoritmo~\ref{alg:hll:main} requer a escolha de um valor $b$, que determina quantos bits da função \emph{hash} serão utilizados para particionar as observações. Com isso é possível representar $m=2^b$ registradores, onde serão mantidos o tamanho do maior prefixo visto nos bits restantes dos hashes observados (função $\rho(w)$). Calcula-se, então, a média harmônica entre os valores estimados em cada um dos registradores. Esta é a principal diferença entre os algoritmos \emph{LogLog} (que usa média geométrica) e \emph{HyperLogLog} (que usa média harmônica). Através desta mudança, \emph{HyperLogLog} foi capaz de melhorar a precisão do algoritmo em 20\%  \cite{flajolet2008hyperloglog}. Esta é uma mudança similar à sugerida no trabalho de Chassaing e Lucas \cite{chassaing2007efficient}, que sugere o mesmo tipo de melhoramento ao algoritmo \emph{MinCount}.
+É importante observar que se a estimativa $E$ encontrada estiver no intervalo $(\frac{5}{2}m, \frac{1}{30}2^{32}]$, o algoritmo a considera o retorno apropriado. Entretanto, se ($E \leq \frac{5}{2}m$), a variância dos estimadores pode causar um erro maior que o esperado. Para este caso, utiliza-se o algoritmo \emph{Linear Counting} \cite{whang1990linear} sobre o vetor $M$. Se $E > \frac{1}{30}2^{32}$, pode haver muitas colisões entre as funções \emph{hash}. Para corrigir o valor estimado, o algoritmo compensa as possíveis colisões de forma análoga ao caso anterior, mas considerando $E$ como o número de \emph{hashes} distintos vistos de um total possível de $2^{32}$.
 
-Com a média de todos os registradores é possível computar a estimativa global multiplicando este valor por $m$. Isto se baseia em que cada subconjunto tinha a mesma probabilidade de receber elementos distintos. Além disso, é preciso corrigir um certo viés multiplicativo, introduzido por uma caracteristica intrínseca da própria média harmônica \cite{flajolet2008hyperloglog}. Para isso, multiplicamos o resultado por $\alpha_m$:
-\begin{align*}
-    \alpha_m & = \left( m \int_0^\infty \left( \log_2 \left( \frac{2+u}{1+u} \right) \right)^m du \right) ^ {-1} \\
-             & \approx  0.7213/(1+ 1.079/m) \text{, para } m>128
-\end{align*}
-
-O valor estimado final pode ter alguns problemas de precisão, se for muito grande ou muito pequeno. Se for muito pequeno ($E \leq \frac{5}{2}m$), a variância dos registradores pode causar um erro maior que o esperado. Para este caso, utiliza-se o algoritmo \emph{Linear Counting} \cite{whang1990linear} sobre o vetor $M$. Se for muito grande ($E > \frac{1}{30}2^{32}$, para hashes de 32 bits) pode haver muitas colisões entre as funções \emph{hash}. Para corrigir o valor estimado, o algoritmo compensa as possíveis colisões de forma análoga ao algoritmo \emph{Linear Counting}, mas tratando $E$ como o número de registradores diferentes de zero.
-
-O erro esperado para o \emph{HyperLogLog} depende apenas da quantidade de registradores utilizada ($m$). O algoritmo é capaz de produzir estimativas com erro padrão de $1.04/\sqrt{m}$. Isto é, para $b=11$, i.e., $m=2048$, o erro padrão esperado é de 2.3\%. A Figura~\ref{fig:hll:proberr} mostra o erro padrão por número de registradores.
+O erro esperado para o \emph{HyperLogLog} depende apenas da quantidade $m$ de posições no vetor $M$. O algoritmo é capaz de produzir estimativas com erro padrão de $1,04/\sqrt{m}$. Isto é, para $b=11$, i.e., $m=2048$, o erro padrão esperado é de 2,3\%. A Figura~\ref{fig:hll:proberr} mostra o erro padrão por número $m$ de posições no vetor $M$.
 
 \begin{figure}[!htbp]
 \centering
@@ -111,13 +110,13 @@ O erro esperado para o \emph{HyperLogLog} depende apenas da quantidade de regist
 	\addplot[mark=*,line width=1pt, domain=1:18,samples=19] {p(x)};
 	\end{axis}
 \end{tikzpicture}}
-\caption{Erro padrão por número de registradores}
+\caption{Erro padrão por tamanho de $M$}
 \label{fig:hll:proberr}
 \end{figure}
 
-Embora com um erro relativo maior que outros algoritmos, a grande vantagem do \emph{HyperLogLog} é precisar de apenas $\log_2 \log_2 n$ bits por registrador. \emph{HyperLogLog} tem um erro relativo 33\% maior, para a mesma quantidade de registradores, se comparado com o do algoritmo \emph{Probabilistic Counting} ($0.78 / \sqrt{m}$ \cite{flajolet1985probabilistic}), por exemplo. Entretanto, em termos de representação em memória, \emph{HyperLogLog} usa apenas 21\% do número de bits requerido por \emph{Probabilistic Counting}.
+Embora com um erro relativo maior que outros algoritmos, a grande vantagem do \emph{HyperLogLog} é precisar de apenas $\log_2 \log_2 n$ bits por elemento em $M$. \emph{HyperLogLog} tem um erro relativo 33\% maior, para o mesmo número de posições em $M$, se comparado com o do algoritmo \emph{Probabilistic Counting} ($0,78 / \sqrt{m}$ \cite{flajolet1985probabilistic}), por exemplo. Entretanto, em termos de representação em memória, \emph{HyperLogLog} usa apenas 21\% do número de bits requerido por \emph{Probabilistic Counting}.
 
-\emph{HyperLogLog} também é facilmente paralelizável. Cada subconjunto pode ser calculado em uma máquina diferente. Posteriormente é possível realizar a união entre os resultados de cada máquina. A união entre dois \emph{sketches} de mesma dimensionalidade pode ser feita apenas obtendo o máximo em cada posição do vetor $M$.
+\emph{HyperLogLog} também é facilmente paralelizável. É possível particionar o conjunto calculando cada parte isoladamente das demais. Posteriormente é possível realizar a união entre os resultados obtidos. A união entre dois \emph{HyperLogLogs} de mesma dimensionalidade pode ser feita apenas obtendo o máximo em cada posição do vetor $M$.
 
 A interseção entre dois \emph{sketches} não é possível. É possível, porém, calcular a cardinalidade da interseção entre dois conjuntos utilizando o princípio da inclusão-exclusão, usando a operação de união, que é facilmente computável.
 
@@ -127,6 +126,37 @@ A interseção entre dois \emph{sketches} não é possível. É possível, poré
 
 \subsection{Exemplo}\label{sec:hll:example}
 
+Com o objetivo de facilitar o entendimento da estrutura \emph{HyperLogLog}, apresentamos aqui um exemplo prático de seu uso. Consideraremos aqui a simulação de inserção de cadeias de caracteres em uma estrutura \emph{HyperLogLog} com $m = 16$, usando uma função \emph{hash} de 16 bits (por simplicidade). Como visto na seção anterior, não há garantias teóricas para $m < 128$, mas ignoraremos este fato por enquanto, apenas para fins didáticos. A Figura~\ref{fig:hll_example_legend} explica como será representada cada entrada no exemplo.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[scale=0.6]{figures/hll_example_legend.pdf}
+  \caption{Modelo de linha para exemplos}
+  \label{fig:hll_example_legend}
+\end{figure}
+
+Cada linha (exceto a primeira) contém uma cadeia a ser inserida e o valor do \emph{hash} 16 bits da cadeia, com os quatro primeiros bits em destaque. Esses bits representam o índice no intervalo $[0;15]$ onde o resultado será inserido. Os 12 bits restantes são usados para computar o tamanho do prefiro $0^{p-1}1$ que será atualizado naquele índice. Além disso, na linha são representadas as 16 posições do vetor $M$ com o estado após a inserção da cadeia representada na linha, destacando o índice referenciado. A primeira linha representa o estado inicial. A simulação pode ser vista na Figura~\ref{fig:hll_example}.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[scale=0.6]{figures/hll_example.pdf}
+  \caption{Exemplos de inserção na estrutura \emph{HyperLogLog}}
+  \label{fig:hll_example}
+\end{figure}
+
+A estimativa preliminar para o vetor $M$ pode ser calculada de acordo com a fórmula descrita na seção anterior, isto é
+\begin{align*}
+    E &= \alpha_m m^2 (2^0 + 2^0 + 2^{-4} + 2^{-1} + 2^0 + 2^0 + 2^0 + 2^{-2} + \\
+            &\phantom{= \alpha_m m^2 (} 2^0 + 2^{-1} + 2^0 + 2^0 + 2^{-2} + 2^0 + 2^0 + 2^{-3})^{-1} \\
+    & = 0,6757304291820364 \times 256 \times 0,085561497 \approx 14,80
+\end{align*}
+
+Como a estimativa preliminar é menor que $\frac{5}{2}m$, a estimativa final será dada pelo algoritmo \textsc{LinearCounting}, baseado no número de 0's no vetor $M$, isto é:
+\[
+    m\ln(m/10) \approx 7,52
+\]
+    
+Após arredondamento, a resposta final do algoritmo, nesta simulação, seria $8$, o mesmo número de cadeias inseridas na estrutura.
 
 \subsection{\emph{HyperLogLog++}}
 
@@ -145,9 +175,9 @@ As mudanças, embora simples, trazem considerável ganho em aplicações prátic
     
     Heule et al. mostram que este erro era causado por um simples viés que pode ser medido empiricamente e corrigido, melhorando consideravelmente a precisão do algoritmo. 
 
-    Além disso, mostram que o limite empírico de $\frac{5}{2}m$ do artigo original possui falhas e pode causar uma anomalia na estimativa em um intervalo importante de cardinalidades.
+    Além disso, demonstram empiricamente que ocorre uma anomalia no erro observado próximo à cardinalidade $\frac{5}{2}m$, definida no artigo original como ponto de transição entre a estimativa dada pelo \emph{Linear Counting} e o \emph{HyperLogLog} em si.
     
-    Na seção~\ref{sec:hll:experiments}, mostramos os efeitos empíricos desta correção em comparação com o algoritmo original.
+    Na Seção~\ref{sec:hll:experiments}, mostramos os efeitos empíricos desta correção em comparação com o algoritmo original.
 
   \item[Representação compacta de dados esparsos] \hfill \\
     Embora o algoritmo precise lidar com altas cardinalidades, na maior parte do tempo conjuntos com poucos elementos serão analisados. No algoritmo original, independente da cardinalidade do conjunto, a estrutura tem sempre o mesmo custo de memória. O artigo sugere uma representação mais compacta para estruturas esparsas. As principais mudanças envolvem guardar apenas os índices com valores no array utilizado pelo algoritmo, usar codificação de inteiros com tamanho variável e introduzir um passo de compressão para casos onde a estrutura é atualizada em lotes.
@@ -158,14 +188,14 @@ As mudanças, embora simples, trazem considerável ganho em aplicações prátic
 
 Em muitas situações pode ser útil computar \emph{HyperLogLogs} de vários conjuntos e poder realizar operações entre eles. Por exemplo, como estimar quantas pessoas acessaram \emph{o site A ou o site B}, tendo apenas o \emph{sketch} dos usuários que acessaram cada site separadamente?
 
-A operação mais simples de se calcular é a união entre conjuntos. A união entre conjuntos representados por dois \emph{HyperLogLogs} de mesma precisão $m$ consiste em obter o máximo entre cada um dos registradores da estrutura.
+A operação mais simples de se calcular é a união entre conjuntos. A união entre conjuntos representados por dois \emph{HyperLogLogs} de mesmo tamanho $m$ consiste em obter o máximo entre cada uma das posições no vetor $M$. Em outras palavras,
 \[
-M_{A \cup B} = [\max(M_A[i], M_B[i]) \text{, } 0 \leq i < m]
+M_{A \cup B}[i] = \max(M_A[i], M_B[i]) \text{ para todo } 0 \leq i < m \text{.}
 \]
 
-Quando os dois \emph{sketches} tem valores de $m$ diferentes, é preciso \emph{dobrar} o de maior precisão sobre si mesmo quantas vezes forem necessárias para torná-lo compatível com o de menor precisão. Isto é:
+Quando os dois \emph{sketches} tem valores de $m$ diferentes, é preciso diminuir o de maior tamanho sobre si mesmo quantas vezes forem necessárias para que fique com o mesmo tamanho do menor. Isto é:
 \[
-M_{A}' = [\max(M_A[2i], M_A[2i+1]) \text{, } 0 \leq i < \frac{1}{2}m]
+M_{A}'[i] = \max(M_A[2i], M_A[2i+1]) \text{ para todo } 0 \leq i < \frac{1}{2}m \text{.}
 \]
 
 A possibilidade de obter o \emph{HyperLogLog} da união entre dois conjuntos torna o algoritmo facilmente paralelizável, pois é possível computar cada subconjunto em um nó de um cluster e apenas unir os resultados quando for necessário computar a cardinalidade.
@@ -175,7 +205,7 @@ No caso da interseção, não é possível fazer o mesmo. Não há na própria e
 |A \cap B| = |A| + |B| - |A \cup B|
 \]
 
-Como todos os termos são estimáveis utilizando apenas operações que já sabemos efetuar, é possível estimar a interseção. Entretanto, o erro absoluto é proporcional à cardinalidade da união entre os dois conjuntos. Se a interseção desejada for um conjunto pequeno, o erro pode ser ordens de grandeza maior que o próprio conjunto.
+Como todos os termos são estimáveis utilizando apenas operações já discutidas, é possível estimar a interseção. Entretanto, o erro absoluto é proporcional à cardinalidade da união entre os dois conjuntos. Se a interseção desejada for um conjunto pequeno, comparado com os conjuntos de entrada, o erro absoluto pode ser ordens de grandeza maior que a própria interseção.
 
 Uma outra técnica, proposta por Pascoe \cite{pascoe2013hllminhash}, consiste em manter um \emph{MinHash} associado ao \emph{HyperLogLog} estimar o índice de Jaccard sempre que for necessário computar a cardinalidade da interseção. A técnica se baseia na observação que
 \[
@@ -209,7 +239,7 @@ Um dos principais usos para algoritmos como \emph{HyperLogLog} é a estimativa d
 
 No Google, tanto \emph{CountMin} quanto \emph{HyperLogLog} são utilizados para responder consultas nos sistemas \emph{Dremel} (sistema para análise de dados em larga escala) e \emph{PowerDrill} (um banco de dados orientado a colunas). \cite{hall2012processing,melnik2010dremel,heule2013hyperloglog}.
 
-O sistema de armazenamento Redis também permite o armazenamento de \emph{sketches} de forma built-in. \cite{sindhu2015brief}, assim como o banco de dados PostgreSQL, que possui uma implementação nativa de \emph{HyperLogLog} como uma das agregações de sua linguagem \cite{chabchoub2014can}.
+O sistema de armazenamento Redis também permite o armazenamento de \emph{sketches} de forma built-in \cite{sindhu2015brief}, assim como o banco de dados PostgreSQL, que possui uma implementação nativa de \emph{HyperLogLog} como uma das agregações de sua linguagem \cite{chabchoub2014can}.
 
 A Amazon também anunciou a adição de uma agregação de contagem aproximada que utiliza HyperLogLog internamente \cite{amazon2015hyperloglog}.
 
@@ -344,4 +374,4 @@ O \emph{MinHash} em todos os testes utilizava a técnica com apenas uma função
 \label{fig:hll:exp_minhash}
 \end{figure}
 
-Pelo resultado é possível observar como existe um certo ponto onde o erro do \emph{MinHash} passa a dominar a estimativa, e a partir dele não vale mais a pena aumentar a precisão do \emph{MinHash}. Para $k = 2048$, este valor mostrou-se próximo a $b = 14$., com um erro médio de aproximadamente $3.5\%$.
+Pelo resultado é possível observar como existe um certo ponto onde o erro do \emph{MinHash} passa a dominar a estimativa, e a partir dele não vale mais a pena aumentar a precisão do \emph{MinHash}. Para $k = 2048$, este valor mostrou-se próximo a $b = 14$, com um erro médio de aproximadamente $3,5\%$.

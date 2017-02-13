@@ -2,19 +2,19 @@
 \chapter{Conceitos Básicos}\label{cap:concepts}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A fim facilitar o entendimento dos conceitos explorados nos próximos capítulos, introduzimos aqui os conceitos básicos utilizados ao longo deste trabalho.
+A fim facilitar o entendimento das ideias exploradas nos próximos capítulos, introduzimos aqui os conceitos básicos utilizados ao longo deste trabalho.
 
-Em especial, abordaremos alguns conceitos básicos de probabilidade, explicando desde o conceito de espaço amostral até variáveis aleatórias e estimadores; conceitos essenciais para explicar e demonstrar as propriedades de estruturas de dados probabilísticas. 
+Em especial, abordaremos o básico de probabilidade, explicando desde o conceito de espaço amostral até variáveis aleatórias e estimadores; conceitos essenciais para explicar e demonstrar as propriedades de estruturas de dados probabilísticas. 
 
 Além disso, faremos uma revisão do estado da arte sobre funções \emph{hash}, criptográficas e não-criptográficas, falando também sobre \emph{hashing} universal e terminando com alguns exemplos de funções \emph{hash} importantes.
 
 \section{Introdução à probabilidade}
 
-O assunto estruturas de dados probabilísticas claramente depende muito da teoria e notações da cálculo de probabilidades. Neste trabalho, a fim de facilitar o entendimento, introduzimos o assunto utilizando notação definida em \cite{figueiredo2007randomizados}.
+Estruturas de dados probabilísticas claramente dependem muito da teoria e notações da cálculo de probabilidades. Neste trabalho, a fim de facilitar o entendimento, introduzimos o assunto utilizando notação definida em \cite{figueiredo2007randomizados}.
 
 \subsection{Espaço probabilístico}
 
-Define-se o \emph{espaço probabilístico} como formado por dois componentes: um \emph{espaço amostral} $\Omega = \{r_1, r_2, \cdots\}$, que representa os possíveis resultados de um experimento aleatório, e uma \emph{função de probabilidade} $\Pr$, que define a probabilidade com que qualquer \emph{evento} $A \subseteq \Omega$ ocorre em experimentos aleatórios. Esta função precisa respeitar as seguintes propriedades:
+Define-se o \emph{espaço probabilístico} como formado por dois componentes: um \emph{espaço amostral} $\Omega = \{r_1, r_2, \ldots\}$, que representa os possíveis resultados de um experimento aleatório, e uma \emph{função de probabilidade} $\Pr$, que define a probabilidade com que qualquer \emph{evento} $A \subseteq \Omega$ ocorre em experimentos aleatórios. Esta função precisa respeitar as seguintes propriedades:
 
 \begin{enumerate}
   \item Para todo evento $A \subseteq \Omega$, $0 \leq \Pr[A] \leq 1$.
@@ -48,30 +48,30 @@ ou seja,
 \begin{alignat*}{2}
 \Pr[\{2,4,6\} \cup \{3,6\}] &= \Pr[\{2,4,6\}] + \Pr[\{3,6\}] - \Pr[\{6\}] \\
                             &= {^3/_6} + {^2/_6} - {^1/_6} \\
-                            &= {^4/_6}
+                            &= {^2/_3}
 \end{alignat*}
 
 \subsection{Variáveis aleatórias}
 
-Uma \emph{variável aleatória} $X$ é uma função que mapeia o espaço amostral em um outro conjunto. Neste trabalho apenas lidaremos com variáveis aleatórias reais, na forma $X : \Omega \to \mathbb{R}$. 
+Uma \emph{variável aleatória} $X$ é uma função que mapeia o espaço amostral em um outro conjunto. Neste trabalho apenas lidaremos com variáveis aleatórias reais, isto é, na forma $X : \Omega \to \mathbb{R}$. 
 
-A função \emph{densidade de probabilidade} de uma variável aleatória real é definida como $p_X(x) : \mathbb{R} \to [0, 1]$. $p_X(x) = \Pr[X = x]$, que é outra forma de escrever $\Pr[\{r \in \Omega \mid X(r) = x\}]$, ou seja, a probabilidade do resultado $r$ de um experimento aleatório seja tal que $X(r) = x$.
+A função \emph{densidade de probabilidade} $p_X(x) : \mathbb{R} \to [0, 1]$ de uma variável aleatória real $X$ é definida como $p_X(x) = \Pr[X = x]$, que é outra forma de escrever $\Pr[\{r \in \Omega \mid X(r) = x\}]$, ou seja, a probabilidade do resultado $r$ de um experimento aleatório seja tal que $X(r) = x$.
 
-O valor esperado (ou esperança) de uma variável aleatória consiste na média de todos os possíveis valores que ela pode assumir, ponderada pela probabilidade que cada valor tem de ser assumido. Isto é,
+O \emph{valor esperado} (ou \emph{esperança}) de uma variável aleatória consiste na média de todos os possíveis valores que ela pode assumir ponderada pela probabilidade que cada valor tem de ser assumido. Isto é,
 \[
     \text{E}[X] = \sum_{x \in \mathbb{R}} x p_X(x).
 \]
 
-Por exemplo, considere o resultado do lançamento de dois dados de seis lados. Podemos definir a variável $X$ como a soma dos valores obtidos nos dados. Assim, temos por exemplo que $p_X(3) = {^2/_{36}}$, pois apenas dois resultados possíveis neste experimento resultam na soma 3 ($1+2$ e $2+1$). Por outro lado, $p_X(7) = {^6/_{36}}$, pois seis resultados possíveis no espaço amostral somam 7 ($1+6$, $2+5$, etc.). Assim, o valor esperado para a variável $X$ é:
+Por exemplo, considere o resultado do lançamento de dois dados de seis lados. Podemos definir a variável $X$ como a soma dos valores obtidos nos dados. Assim, temos por exemplo que $p_X(3) = {^2/_{36}}$, pois apenas dois resultados possíveis neste experimento resultam na soma 3 ($1+2$ e $2+1$). Por outro lado, $p_X(7) = {^6/_{36}}$, pois seis resultados possíveis no espaço amostral somam 7 ($1+6$, $2+5$, etc.). Assim, o valor esperado para a variável $X$ é
 \begin{align*}
     \text{E}[X] &= 2 \cdot p_X(2) + 3 \cdot p_X(3) + ... + 12 \cdot p_X(12) \\
           &= 2 \cdot {^1/_{36}} + 3 \cdot {^2/_{36}} + ... + 12 \cdot {^1/_{36}} \\
           &= 7
 \end{align*}
 
-A \emph{linearidade da esperança} é a propriedade que diz que, para variáveis aleatórias $X_1, X_2, \cdots, X_n$ e uma função linear $h$, vale:
+A \emph{linearidade da esperança} é a propriedade que diz que, para variáveis aleatórias $X_1, X_2, \cdots, X_n$ e uma função linear $h$, vale
 \[
-    \text{E}[h(X_1, X_2, \cdots, X_n)] = h(\text{E}[X_1], \text{E}[X_2], \cdots, \text{E}[X_n])
+    \text{E}[h(X_1, X_2, \cdots, X_n)] = h(\text{E}[X_1], \text{E}[X_2], \cdots, \text{E}[X_n])\text{.}
 \]
 
 Ainda utilizando o exemplo do lançamento de dois dados, uma outra forma de calcular o valor esperado seria fazê-lo para apenas um dado e dobrar o resultado. Considere as variáveis aleatórias $Y_1$ e $Y_2$ como os valores resultantes do lançamento de cada um dos dados, tal que $X = Y_1 + Y_2$. Assim, pela linearidade da esperança, $\text{E}[X] = \text{E}[Y_1 + Y_2] = \text{E}[Y_1] + \text{E}[Y_2]$. 
@@ -90,7 +90,7 @@ Uma propriedade importante de variáveis aleatórias é sua variância, que pode
     \text{Var}[X] = \text{E}[(X - \text{E}[X])^2] = \text{E}[X^2] - (\text{E}[X])^2
 \]
 
-Dadas variáveis aleatórias independentes $X_1, X_2, \cdots, X_n$, todas com a mesma variância $\sigma^2$, a \emph{fórmula de Bienaymé} reza sobre a variância da média $\bar{X}$ dessas variáveis:
+Dadas variáveis aleatórias independentes $X_1, X_2, \cdots, X_n$, todas com a mesma variância $\sigma^2$, a \emph{fórmula de Bienaymé} estabelece que a variância da média $\bar{X}$ dessas variáveis é dada por
 \[
     \text{Var}[\bar{X}] = \text{Var}\left[ \frac{1}{n} \sum_{i=1}^{n} X_i \right] = \frac{1}{n^2} \sum_{i=1}^{n} \text{Var}[X_i]  = \frac{\sigma^2}{n}
 \]
@@ -99,7 +99,7 @@ Isto significa, na prática, que a média entre $n$ variáveis independentes dim
 
 Algumas variáveis aleatórias são muito comumente vistas na teoria e possuem muitas propriedades já estudadas. Para este trabalho iremos focar na variável de \emph{Bernoulli} e na variável \emph{binomial}, sendo a primeira apenas um caso especial da segunda.
 
-A variável de Bernoulli pode assumir apenas dois valores: 0 ou 1. Ela representa o resultado de um experimento onde o valor 0 representa um "fracasso" e o valor 1 um "sucesso". Seja $p$ a probabilidade de sucesso, temos que
+A variável de Bernoulli pode assumir apenas dois valores: 0 ou 1. Ela representa o resultado de um experimento onde o valor 0 representa um ``fracasso'' e o valor 1 um ``sucesso''. Seja $p$ a probabilidade de sucesso, temos que
 \[
     p_X(x) = \begin{cases}
         1 - p  & \text{se } x = 0 \\
@@ -111,36 +111,30 @@ A variável de Bernoulli pode assumir apenas dois valores: 0 ou 1. Ela represent
 
 É fácil demonstrar que para uma variável de Bernoulli $X$, $\text{E}[X] = p$ e $\text{Var}[X] = p (1-p)$.
 
-A variável binomial representa o total de sucessos em uma série de $n$ experimentos e pode ser vista como o somatório de $n$ variáveis de Bernoulli com uma mesma probabilidade $p$.
-
-Denota-se $B(n, p)$ a variável binomial que representa o total de sucessos de $n$ experimentos com probabilidade $p$. A densidade de probabilidade desta variável é
+A variável binomial representa o total de sucessos em uma série de $n$ experimentos e pode ser vista como o somatório de $n$ variáveis de Bernoulli com uma mesma probabilidade $p$. Denota-se $B(n, p)$ a variável binomial que representa o total de sucessos de $n$ experimentos com probabilidade $p$. A densidade de probabilidade desta variável é
 \[
-    p_{B(n,p)} = \begin{cases}
+    p_{B(n,p)}(x) = \begin{cases}
         {\binom{n}{x}} p^x(1-p)^{n-x}    & \text{para } 0 \leq x \leq n \\
         0                               & \text{para demais valores de x} \\
     \end{cases}
 \]
 
-O valor esperado da variável binomial pode ser inferido pela linearidade da esperança de cada variável de Bernoulli que a compõem, ou seja $E[B(n, p)] = np$. 
+Perceba que a variável de Bernoulli é apenas um caso especial de uma variável binomial, $B(1, p)$.
+
+O valor esperado da variável binomial pode ser inferido pela linearidade da esperança de cada variável de Bernoulli que a compõem, resultando em $E[B(n, p)] = np$. 
 
 A partir da definição $\text{E}[X^2] = n (n-1) p^2 + np$, podemos calcular a variância da variável binomial: $\text{Var}[X] = np(1-p)$.
 
-Perceba que a variável de Bernoulli é apenas um caso especial de uma variável binomial, $B(1, p)$.
-
 \subsection{Desigualdades probabilísticas}
 
-Embora o valor esperado de uma variável aleatória nos forneça valiosa informação sobre como uma variável se comporta na média de vários experimentos, ele não nos diz muito sobre a distribuição dos valores que a variável pode assumir.
+Embora o valor esperado de uma variável aleatória nos forneça a informação sobre como uma variável se comporta na média de vários experimentos, ele não nos diz muito sobre a distribuição dos valores que a variável pode assumir. Ao utilizar estruturas de dados probabilísticas, por exemplo, calculamos o valor de variáveis aleatórias cujo valor esperado é igual ao que se deseja estimar. Entretanto, para ter alguma utilidade prática, é preciso poder prever a probabilidade de erro. A seguir apresentaremos algumas desigualdades que permitem definir um limite superior na probabilidade da variável aleatória assumir certos intervalos de valores.
 
-Ao utilizar estruturas de dados probabilísticas, por exemplo, calculamos o valor de variáveis aleatórias cujo valor esperado é igual ao que se deseja estimar. Entretanto, para ter alguma utilidade prática, é preciso poder prever a probabilidade de erro.
-
-A seguir apresentaremos algumas desigualdades que permitem definir um limite superior na probabilidade da variável aleatória assumir certos intervalos de valores.
-
-A \emph{desigualdade de Markov}, por exemplo, diz que para variáveis $X$ que somente assumem valores não-negativos,
+A \emph{desigualdade de Markov} estabelece que para variáveis $X$ que somente assumem valores não-negativos,
 \[
     \Pr[X \geq a] \leq \frac{\text{E}[X]}{a} \text{, para todo } a > 0 \text{.}
 \]
 
-Se a variância da variável for conhecida, um limite mais forte pode ser estabelecido, através da \emph{desigualdade de Chebyshev}:
+Se a variância da variável for conhecida, um limite mais forte pode ser estabelecido, através da \emph{desigualdade de Chebyshev}, dada por
 \[
     \Pr[|X - \text{E}[X]| \geq a] \leq \frac{\text{Var}[X]}{a^2} \text{, para todo } a > 0 \text{.}
 \]
@@ -152,7 +146,7 @@ Se a variância da variável for conhecida, um limite mais forte pode ser estabe
 
 Este limite mostra, de forma intuitiva, como as probabilidades de cada um dos valores de $X$ se comportam conforme eles se afastam de $\text{E}[X]$.
 
-Sem mais informações sobre a variável não é possível definir limites gerais mais fortes para sua distribuição. Entretanto, para alguns tipos de variáveis específicas é possível utilizar a \emph{desigualdade de Chernoff} para encontrar limites específicos desta distribuição. Existem diversas variantes desta desigualdade, cada uma específica para um tipo de variável aleatória. Em especial, abordaremos aqui o uso desta desigualdade para variáveis de Bernoulli.
+Sem mais informações sobre a variável não é possível definir limites gerais mais fortes para sua distribuição. Entretanto, para variáveis compostas pela soma de variáveis independentes é possível utilizar a \emph{desigualdade de Chernoff} para encontrar limites específicos da distribuição. Existem diversas variantes desta desigualdade, cada uma específica para um tipo de variável aleatória. Em especial, abordaremos aqui o uso desta desigualdade para variáveis de Bernoulli.
 
 Considere uma variável $X = \sum_{i=1}^n X_i$, onde todo $X_i$ é uma variável de Bernoulli independente com probabilidade $p_i$. Seja também $\mu = \text{E}[X] = \sum_{i=1}^n p_i$. Então, dois limites se aplicam:
 
@@ -168,34 +162,23 @@ Uma versão simplificada que combina combina os dois limites é definida por
 
 \subsection{Estimadores}
 
-Um estimador é uma regra que permite estimar um certo parâmetro $\theta$ de uma variável aleatória $X$ a partir de observações sobre a mesma. São funções denotadas $\hat{\theta} : E \to \Theta$, onde $E$ é o contra-domínio da variável $X$ e $\Theta$ é chamado de espaço paramétrico.
+Um \emph{estimador} é uma variável aleatória que permite estimar um certo parâmetro $\theta$ sobre outra variável $X$ a partir de observações sobre a mesma. São funções denotadas $\hat{\theta} : E \to \Theta$, onde $E$ é a imagem da variável $X$ e $\Theta$ é chamado de espaço paramétrico. Estimadores, por serem variáveis aleatórias, possuem média, variância, desvio padrão etc.
 
-Estimadores também são variáveis aleatórias por si só, portanto possuem média, variância, desvio padrão etc.
-
-O viés de um estimador é a diferença entre seu valor esperado e o parâmetro que ele almeja estimar, ou seja, $\text{B}(\hat{\theta}) = \text{E}[\hat{\theta}] - \theta$. Um estimador é considerado \emph{não-enviesado} se e somente se $\text{B}(\hat{\theta}) = 0$.
-
-A variância de um estimador é um parâmetro importante para analisar seu erro padrão. A variância, assim como em uma variável aleatória, mede o quanto cada observação se afasta de seu valor valor esperado e é definida como:
-\[
-    \text{Var}[\hat{\theta}] = \text{E}[(\hat{\theta} - \text{E}[\hat{\theta}])^2] = \text{E}[\hat{\theta}^2] - (\text{E}[\hat{\theta}])^2
-\]
-
-Consequentemente, o erro padrão de um estimador é definido como $\sigma_{\hat{\theta}} = \sqrt{\text{Var}[\hat{\theta}}]$.
-
-O erro médio quadrático (EMQ) de um estimador combina variância e viés em um único conceito. Em vez de comparar a diferença entre cada observação e o valor esperado do estimador, compara-se com o valor real do parâmetro. Isto é $\text{EMQ}[\hat{\theta}] = \text{E}[(\hat{\theta} - \theta)^2]$. Em um estimador não-enviesado, o EMQ é igual à variância.
+O \emph{viés} $\text{B}(\hat{\theta})$ de um estimador é a diferença entre seu valor esperado e o parâmetro que ele almeja estimar, ou seja, $\text{B}(\hat{\theta}) = \text{E}[\hat{\theta}] - \theta$. Um estimador é considerado \emph{não-enviesado} se $\text{B}(\hat{\theta}) = 0$. O \emph{erro padrão} de um estimador é definido como $\sigma_{\hat{\theta}} = \sqrt{\text{Var}[\hat{\theta}}]$. O \emph{erro médio quadrático} (EMQ) de um estimador combina variância e viés em um único conceito. Em vez de comparar a diferença entre cada observação e o valor esperado do estimador, compara-se com o valor real do parâmetro. Isto é $\text{EMQ}[\hat{\theta}] = \text{E}[(\hat{\theta} - \theta)^2]$. Em um estimador não-enviesado, o EMQ é igual à variância.
 
 \section{Funções \emph{hash}}
 
 Todas as estruturas descritas neste trabalho são baseadas em funções \emph{hash} e são, de certa forma, dependentes das propriedades das funções utilizadas. Por isso, apresentamos aqui um breve resumo das características principais esperadas de funções aplicáveis a estruturas de dados probabilísticas.
 
-O objetivo principal das funções \emph{hash} neste contexto é a capacidade de simular certa aleatoriedade a um conjunto de dados que pode ter um grau de entropia muito baixo. Como Knuth diz em \cite{knuth1998art}, é impossível definir uma função que cria dados aleatórios a partir de dados não aleatórios, mas na prática é possível criar uma imitação boa o suficiente.
+O objetivo principal das funções \emph{hash} neste contexto é a capacidade de simular certa aleatoriedade a um conjunto de dados que pode ser altamente estruturados. É impossível definir uma função que cria dados aleatórios a partir de dados não aleatórios \cite{knuth1998art}, mas na prática é possível criar uma imitação boa o suficiente.
 
 \subsection{Tabelas \emph{hash}}
 
-Originalmente, a aplicação principal de funções \emph{hash} é a possibilidade de mapear chaves contidas em conjuntos muito grandes a entradas numa tabela com tamanho potencialmente bem menor do que os conjuntos que representam, uma tabela \emph{hash}. Por exemplo, é possível mapear \emph{strings}, um conjunto infinito, para índices na tabela, de forma que a complexidade esperada para verificar sua existência seja independente do tamanho da tabela, e sim proporcional ao tamanho da \emph{string}, desde que a tabela possua . A Figura~\ref{fig:hashtable} mostra um exemplo deste tipo de tabela.
+Originalmente, a aplicação principal de funções \emph{hash} é a possibilidade de mapear chaves contidas em conjuntos muito grandes a entradas numa tabela com tamanho potencialmente bem menor do que os conjuntos que representam, uma tabela \emph{hash}. Por exemplo, é possível mapear \emph{strings}, um conjunto infinito, para índices na tabela, de forma que a complexidade esperada para verificar sua existência seja independente do tamanho da tabela, e sim proporcional ao tamanho da \emph{string}, desde que o número de entradas na tabela seja um fator do número de elementos inseridos. A Figura~\ref{fig:hashtable} mostra um exemplo deste tipo de tabela.
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[scale=0.5]{files/hashtable.pdf}
+  \includegraphics[scale=0.5]{figures/hashtable.pdf}
   \caption{Exemplo de tabela \emph{hash}}
   \label{fig:hashtable}
 \end{figure}
@@ -215,7 +198,7 @@ Há outros detalhes teóricos e de implementação de tabelas \emph{hash} que n�
 
 Não há um conjunto ideal de propriedades de funções \emph{hash} que sirva a todos os propósitos possíveis. As propriedades ideais para uso em uma tabela \emph{hash} não são os mesmos para o uso em aplicações de segurança, por exemplo. Nestas aplicações, geralmente espera-se que satisfaça-se algumas propriedades adicionais, de forma a garantir que usuários maliciosos não possam explorar as propriedades da construção da função para obter dados não autorizados do sistema.
 
-Espera-se que uma função \emph{hash} criptográfica $h$ possua as estas propriedades \cite{katz2014introduction}:
+Espera-se que uma função \emph{hash} criptográfica $h$ possua as seguintes propriedades \cite{katz2014introduction}:
 
 
 \begin{itemize}
@@ -233,7 +216,7 @@ Um corolário destas propriedades é conhecido como \emph{Efeito Avalanche}, que
 Funções \emph{hash} criptográficas possuem muitos usos na prática. Entre eles, podemos citar:
 
 \begin{itemize}
-  \item \textbf{Representação segura de senhas:} Consiste em usar funções \emph{hash} para codificar e verificar igualdade entre senhas sem precisar armazenar as senhas em si, valendo-se do fato de que se $x = y \rightarrow h(x) = h(y)$. Este método é utilizado na maior parte dos serviços na \emph{web}, para evitar que um vazamento acidental do banco de dados acabe tornando públicas as senhas dos usuários. Geralmente esses \emph{hashes} são melhorados com uso de uma técnica chamada \emph{salting}, onde outros dados são combinados à chave a ser embaralhada pela função para evitar outros tipos de vazamento de informação. Por exemplo, é possível incluir o ID do usuário na chave para evitar que dois usuários com a mesma senha possuam o mesmo \emph{hash}.
+  \item \textbf{Representação segura de senhas:} Consiste em usar funções \emph{hash} para codificar e verificar igualdade entre senhas sem precisar armazenar as senhas em si, valendo-se do fato de que se $x = y \implies h(x) = h(y)$. Este método é utilizado na maior parte dos serviços na \emph{web}, para evitar que um vazamento acidental do banco de dados acabe tornando públicas as senhas dos usuários. Geralmente esses \emph{hashes} são melhorados com uso de uma técnica chamada \emph{salting}, onde outros dados são combinados à chave a ser embaralhada pela função para evitar outros tipos de vazamento de informação. Por exemplo, é possível incluir o ID do usuário na chave para evitar que dois usuários com a mesma senha possuam o mesmo \emph{hash}.
 
   \item \textbf{Verificação de integridade de dados:} Ao aplicar uma função \emph{hash} ao conteúdo de um conjunto de dados, é possível construir uma assinatura que atesta com grande probabilidade a integridade desses dados. De posse desta assinatura e da função utilizada, é possível verificar se os dados sofreram alguma alteração apenas aplicando a função novamente sobre os dados e verificando se as assinaturas são iguais.
   
@@ -249,7 +232,7 @@ Dependendo da aplicação, outras propriedades ainda podem ser requeridas. Por e
 
 \subsection{\emph{Hash-flooding DoS} e \emph{Hashing} universal}
 
-A expectativa de complexidade constante para inserção e busca em tabelas \emph{hash} baseia-se na uniformidade da distribuição na função \emph{hash} associada. Entretanto, como esta função mapeia conjuntos potencialmente infinitos em uma tabela finita, pode haver infinitas colisões no domínio da função. Um usuário mal-intencionado de um sistema poderia utilizar conhecimento sobre a função para enviar entradas cuidadosamente criadas de forma a maximizar o número de colisões na tabela. 
+A expectativa de complexidade constante para inserção e busca em tabelas \emph{hash} baseia-se na uniformidade da distribuição na função \emph{hash} associada e que o número de entradas na tabela seja um fator do número de elementos. Entretanto, como esta função mapeia conjuntos potencialmente infinitos em uma tabela finita, pode haver infinitas colisões no domínio da função. Um usuário mal-intencionado de um sistema poderia utilizar conhecimento sobre a função para enviar entradas cuidadosamente criadas de forma a maximizar o número de colisões na tabela. 
 
 Esta estratégia tem o potencial de elevar a complexidade de inserção e busca na tabela para $O(n)$, o que pode ocupar mais tempo de processamento do que o projetado para o sistema. Ataques de negação de serviço baseados nesta técnica são chamados \emph{Hash-flooding DoS} \cite{klink2011efficient}.
 
@@ -263,7 +246,7 @@ Em muitas funções utilizadas na prática, a implementação aceita uma \emph{s
 
 Funções \emph{hash} são amplamente utilizadas para fornecer aleatoriedade a algoritmos randomizados. Entretanto, as propriedades teóricas destes algoritmos assumem funções perfeitamente uniformes, entre outras propriedades já citadas. É inviável, na prática, encontrar tais funções. Na prática, cada função possui vantagens e desvantagens. Há situações, por exemplo, onde uma função com menor resistência a colisão pode ser usada se o ganho em desempenho justificar a escolha.
 
-Como este é um assunto de grande aplicabilidade prática, muitas funções amplamente utilizadas na indústria possuem apenas evidência empírica de suas propriedades, o que torna difícil uma análise teórica aprofundada do Estado da Arte de funções \emph{hash}.
+Como este é um assunto de grande aplicabilidade prática, muitas funções amplamente utilizadas na indústria possuem apenas evidência empírica de suas propriedades, o que torna difícil uma análise teórica aprofundada do estado da arte de funções \emph{hash}.
 
 Nesta seção discutiremos alguns exemplos de funções \emph{hash}, sua história e propriedades. Todas as funções apresentadas mapeiam sequências de bytes ou caracteres \emph{Unicode} para um número fixo de bits, que pode variar conforme a aplicação.
 
@@ -287,7 +270,7 @@ Esta função é uma instância fixa da família de \emph{hashes} polinomiais in
 \Function{JavaStringHash}{$s$}
     \State $h \gets 0$
     \For{$i \gets  1 \textrm{ to } n$}
-        \State $h \gets 31 * h + s_i$
+        \State $h \gets (31 * h + s_i) \mod 2^{32}$
 	\EndFor
     \Return $h$
 \EndFunction
@@ -295,13 +278,13 @@ Esta função é uma instância fixa da família de \emph{hashes} polinomiais in
 \end{algorithm}
 
 
-A função também pode ser generalizada como uma implementação da técnica \emph{iterated hashing} \cite{lemire2012universality}, que consiste na escolha de uma semente $H_0$ e uma função de compressão $F$, de forma que $H_i = F(H_{i-1}, s_i)$, sendo assim a função $h(s) = H_n$. No caso da função \emph{hash} das \emph{strings} em Java, $H_0 = 0$ e $F(H_{i-1}, s_i) = 31 H_{i-1} + s_i$.
+A função também pode ser generalizada como uma implementação da técnica \emph{iterated hashing} \cite{lemire2012universality}, que consiste na escolha de uma constante $H_0$ (semente) e uma função de compressão $F$, de forma que $H_i = F(H_{i-1}, s_i)$ para todo $i>1$, sendo assim a função $h(s) = H_n$. No caso da função \emph{hash} das \emph{strings} em Java, $H_0 = 0$ e $F(H_{i-1}, s_i) = (31 H_{i-1} + s_i) \mod 2^{32}$.
 
 Não é difícil perceber que esta função não possui as características de segurança descritas na Seção~\ref{sec:hashcripto}, sendo suscetível a inversão. Por exemplo, as \emph{strings} "BBB", "BAa" e "AaB", codificadas em ASCII, possuem todas o mesmo valor de \emph{hash}: 65538.
 
 \subsubsection{Jenkins' \emph{One-At-A-Time hashing}}
 
-A função \emph{One-At-A-Time} é um tipo de \emph{hash} não-criptográfico e foi desenvolvida pelo cientista da computação Bob Jenkins em 1997 \cite{jenkins1997hash}, com o objetivo de sanar problemas comuns em funções \emph{hash} conhecidas na época. O Algoritmo~\ref{alg:jenkinshash} mostra a ideia geral da função.
+A função \emph{One-At-A-Time} é um tipo de \emph{hash} não-criptográfico e foi desenvolvida pelo cientista da computação Bob Jenkins em 1997 \cite{jenkins1997hash}, com o objetivo de sanar problemas comuns em funções \emph{hash} conhecidas na época. O Algoritmo~\ref{alg:jenkinshash} mostra a ideia geral da função. No algoritmo, as funções $\textsc{ShiftLeft}(h, n)$ e $\textsc{ShiftRight}(h, n)$ representam o deslocamento de $n$ bits à esquerda e à direita, respectivamente. Todas as operações são feitas sobre inteiros \emph{unsigned} de 32 bits.
 
 \begin{algorithm}
 \linespread{1}\selectfont
@@ -394,10 +377,8 @@ representam o mesmo valor \emph{hash}.
 
 Entre as aplicações da função SHA-1, pode-se citar todos os protocolos baseados em SSL/TLS, incluíndo HTTPS. SHA-1 tornou-se a opção padrão para função criptográfica desde que falhas sérias de resistência a colisão foram descobertas na até então ubíqua função MD5 \cite{wang2005break}.
 
-Por gerar \emph{hashes} de 160 bits, espera-se que a função possua uma resistência a pré-imagem equivalente. Isto é, espera-se que seja necessário da ordem de $2^{160}$ avaliações da função para encontrar uma mensagem que corresponda a um certo valor \emph{hash} dado. 
+Por gerar \emph{hashes} de 160 bits, espera-se que a função possua uma resistência a pré-imagem equivalente. Isto é, espera-se que seja necessário da ordem de $2^{160}$ avaliações da função para encontrar uma mensagem que corresponda a um certo valor \emph{hash} dado. Para encontrar quaisquer duas mensagens que possuam o mesmo \emph{hash}, espera-se da ordem de apenas $2^{80}$ tentativas (resistência a colisão), valendo-se do \emph{paradoxo do aniversário}. Entretanto, em 2015, Stevens, Karpman e Peyrin \cite{cryptoeprint:2015:967} publicaram artigo demonstrando colisões na função de compressão efetuando apenas $2^{57}$ avaliações. Este acontecimento diminuiu consideravelmente a confiança na função SHA-1, que já sofria ataques desde 2005.
 
-Para encontrar quaisquer duas mensagens que possuam o mesmo \emph{hash}, espera-se da ordem de apenas $2^{80}$ tentativas (resistência a colisão), valendo-se do \emph{paradoxo do aniversário}. Entretanto, em 2015, Stevens, Karpman e Peyrin \cite{cryptoeprint:2015:967} publicaram artigo demonstrando colisões na função de compressão efetuando apenas $2^{57}$ avaliações. Este acontecimento diminuiu consideravelmente a confiança na função SHA-1, que já sofria ataques desde 2005.
-
-As desenvolvedoras de \emph{browsers} Microsoft, Google e Mozilla já anunciaram que deixarão de aceitar certificados assinados com SHA-1 a partir de 2017.
+As desenvolvedoras de \emph{browsers} Microsoft, Google e Mozilla já anunciaram que deixaram de aceitar certificados assinados com SHA-1 a partir de 2017.
 
 Novas famílias de funções foram certificadas pelo NIST e são atualmente recomendadas para aplicações que necessitam de alto nível de segurança: SHA2, família que inclui, entre outras as funções SHA256 e SHA512; e SHA3, que é baseada na família Keccak de funções esponja (uma generalização de funções \emph{hash}).

@@ -4,11 +4,9 @@
 
 Um filtro de Bloom é uma estrutura de dados probabilística que representa um conjunto e permite verificar a pertinência de elementos com tolerância a falsos positivos \cite{bloom1970space}. É uma representação bastante compacta: são necessários menos de 10 bits por elemento para uma probabilidade 1\% de falsos positivos \cite{bonomi2006improved}. 
 
-Nas Seções \ref{sec:bloom:def} e \ref{sec:bloom:example}, apresentamos a definição da estrutura Filtro de Bloom e mostramos um exemplo compreensivo de seu funcionamento. Na Seção~\ref{sec:bloom:false}, calculamos a probabilidade de falsos positivos inerentes ao algoritmo. Na Seção~\ref{sec:bloom:cardinality}, introduzimos uma técnica para estimar cardinalidade de conjuntos utilizando filtro de Bloom. Na Seção~\ref{sec:bloom:counting}, discutimos em detalhe umas das variantes importantes da estrutura que permite remoção de elementos. Outras variantes são discutidas na Seção~\ref{sec:bloom:variants}. Na Seção~\ref{sec:bloom:apps} apresentamos algumas aplicações de filtros de Bloom. E na Seção~\ref{sec:bloom:experiments} mostramos o resultado de experimentos com filtros de Bloom, que visam avaliar o erro observado em uma implementação real.
-
 \subsection{Definição}\label{sec:bloom:def}
 
-Um filtro de Bloom representa um conjunto $S$ de cardinalidade $n$ utilizando um vetor $B$ de $m$ bits. Inicialmente, $B[i] = 0\ \forall\ i \in [1..m]$. O filtro está associado a $k$ funções \emph{hash} $h_i : S \rightarrow [1..m]\ \forall\ i \in [1..k]$. Assume-se que cada função $h_i$ mapeia elementos de $S$ para o intervalo $[1..m]$ de forma aleatória com uma distribuição uniforme.
+Um filtro de Bloom representa um conjunto $S$ de cardinalidade $n$ utilizando um vetor $B$ de $m$ bits. Inicialmente, $B[i] = 0$ para todo $i \in [1..m]$. O filtro está associado a $k$ funções \emph{hash} $h_i : S \rightarrow [1..m]$, para todo $i \in [1..k]$. Assume-se que cada função $h_i$ mapeia elementos de $S$ naqueles de $[1..m]$ de forma aleatória com uma distribuição uniforme.
 
 Para inserir um elemento, é preciso atribuir 1 para cada posição no filtro mapeada pelas funções $h_i$, como mostra o Algoritmo~\ref{alg:bloominsert}.
 
@@ -25,7 +23,7 @@ Para inserir um elemento, é preciso atribuir 1 para cada posição no filtro ma
 \end{algorithmic}
 \end{algorithm}
 
-Analogamente, para verificar se um elemento pertence a um conjunto, é preciso verificar se todos os bits mapeados pelas funções $h_i$ estão ligados, i.e., um elemento $x$ provavelmente pertence ao conjunto $S$ se o Algoritmo~\ref{alg:bloomquery} retorna verdadeiro.
+Analogamente, para verificar se um elemento pertence a um conjunto, é preciso verificar se todos os bits mapeados pelas funções $h_i$ estão ``ligados'', i.e., um elemento $x$ provavelmente pertence ao conjunto $S$ se o Algoritmo~\ref{alg:bloomquery} retorna verdadeiro.
 
 \begin{algorithm}
 \linespread{1}\selectfont
@@ -42,33 +40,52 @@ Analogamente, para verificar se um elemento pertence a um conjunto, é preciso v
 \end{algorithmic}
 \end{algorithm}
 
-A Figura~\ref{fig:bloom1} mostra um exemplo de filtro de Bloom. Do lado esquerdo, estão representadas as operações de inserção, utilizando duas funções \emph{hash}. Do lado direito, as operações de verificação. Importante notar que a última operação de verificação trata o caso de um falso posivito, pois o elemento não existe de fato no conjunto previamente inserido.
+A Figura~\ref{fig:bloom1} mostra um exemplo de filtro de Bloom. Do lado esquerdo, estão representadas as operações de inserção, utilizando duas funções \emph{hash}. Do lado direito, as operações de verificação. Importante notar que na última operação de verificação trata-se de um caso de falso positivo, pois o elemento não existe de fato no conjunto previamente inserido.
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[scale=0.45]{files/bloom1.pdf}
+  \includegraphics[scale=0.45]{figures/bloom1.pdf}
   \caption{Exemplo de filtro de bloom}
   \label{fig:bloom1}
 \end{figure}
 
-Em sua forma mais simples, o funcionamento de um filtro de Bloom é similar ao de uma \emph{hash table} tradicional, porém os elementos originais não são armazenados. Em vez disso, apenas um bit é usado para representar a pertinência do \emph{hash} do elemento na tabela. Além disso, múltiplas funções \emph{hash} são utilizadas.
+Quando $k=1$, o funcionamento de um filtro de Bloom é similar ao de uma \emph{hash table} tradicional, porém os elementos originais não são armazenados. Em vez disso, apenas um bit é usado para representar a pertinência do \emph{hash} do elemento na tabela. Na prática, múltiplas funções \emph{hash} são utilizadas.
 
-Assim como em \emph{hash tables}, pode haver colisões nos filtros de Bloom. Portanto, falsos positivos são possíveis. Falsos negativos por sua vez não são possíveis Este comportamento é desejado em sistemas que precisam evitar operações custosas (por exemplo, acesso a disco, comunicação de rede, etc.) em casos onde não seja realmente necessário. 
+Assim como em tabelas \emph{hash}, pode haver colisões nos filtros de Bloom. Portanto, falsos positivos são possíveis. Falsos negativos por sua vez não são possíveis. Este comportamento é desejado em sistemas que precisam evitar operações custosas (por exemplo, acesso a disco, comunicação de rede, etc.) em casos onde não seja realmente necessário. 
 
 Para diminuir a probabilidade de colisão, é preciso dimensionar o filtro e as funções \emph{hash} baseados no número de elementos esperados. Por exemplo, usando 7 funções e pouco menos de 10 bits por elemento no filtro, é possível garantir uma probabilidade de falsos positivos menor que 1\% \cite{bonomi2006improved}. É possível determinar a quantidade ótima de bits e funções dada uma probabilidade esperada de falsos positivos.
 
-O número de funções \emph{hash} pode posar como um desafio, a princípio. Porém, é resultado conhecido que apenas duas funções independentes são suficientes para gerar qualquer número de funções sem perda das propriedades originais da estrutura \cite{kirsch2006less}.
+As funções \emph{hash} usadas no filtro precisam ser independentes duas-a-duas, o que pode exigir muitos recursos computacionais. Em \cite{kirsch2006less}, Kirsch e Mitzenmacher mostram que é possível implementar um filtro de Bloom com qualquer valor de $k$ apenas combinando duas funções \emph{hash} independentes, sem aumentar a probabilidade de falsos positivos.
 
-Em termos de operações suportadas, filtros de Bloom permitem atualização incremental, bem como união entre filtros (que para filtros de mesmo número de bits, consiste em um \emph{OU binário} entre eles). Entretanto, em sua forma mais simples, não suportam remoção de elementos nem interseção entre filtros sem introduzir falsos negativos ou afetar as probabilidades de falsos positivos. Diversas variações e extensões aos filtros de Bloom foram propostas, algumas discutidas nas Seções \ref{sec:bloom:counting} e \ref{sec:bloom:variants}.
+Em termos de operações suportadas, filtros de Bloom permitem atualização incremental, bem como união entre filtros (que para filtros de mesmo número de bits, consiste em uma operação \emph{OU} bit-a-bit entre eles). Entretanto, em sua forma mais simples, não suportam remoção de elementos nem interseção entre filtros sem introduzir falsos negativos ou afetar as probabilidades de falsos positivos. Diversas variações e extensões aos filtros de Bloom foram propostas, algumas discutidas nas Seções \ref{sec:bloom:counting} e \ref{sec:bloom:variants}.
 
 \subsection{Exemplo}\label{sec:bloom:example}
 
+Com o objetivo de facilitar o entendimento da estrutura filtro de Bloom, apresentamos aqui um exemplo prático de seu uso. Consideraremos aqui a simulação de inserção de strings em um filtro de Bloom com $m = 16$, usando duas funções \emph{hash} que retornam valores no intervalo $[0;15]$. A Figura~\ref{fig:bloom_example_legend} explica como será representada cada entrada no exemplo.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[scale=0.6]{figures/bloom_example_legend.pdf}
+  \caption{Modelo de linha para exemplos}
+  \label{fig:bloom_example_legend}
+\end{figure}
+
+A simulação é dividida em duas partes: inserções e consultas. Na parte das inserções, cada linha (exceto a primeira) contém uma string a ser inserida e os valores retornados por cada função \emph{hash}. Esses valores representam os índices que serão escritos no vetor. Além disso, para cada string, são representadas as 16 posições do vetor $M$ com o estado após a inserção, destacando os índices referenciados. A primeira linha representa o estado inicial. Na parte das consultas, algumas consultas são representadas da mesma maneira que as inserções, entretanto, o vetor não é modificado. A simulação pode ser vista na Figura~\ref{fig:bloom_example}.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[scale=0.6]{figures/bloom_example.pdf}
+  \caption{Exemplos de inserção e consultas no filtro de Bloom}
+  \label{fig:bloom_example}
+\end{figure}
+
+As consultas efetuadas representam resultados diferentes. A consulta por \texttt{Ford Prefect} retorna um resultado positivo, pois ambos os índices apontam para valores 1 na tabela, indicando que a string de fato existe no conjunto. A consulta por \texttt{Slartibartfast} retorna um resultado negativo, pois um dos índices aponta para um valor 0 na tabela, indicando que a string não existe no conjunto. Este resultado é dado com 100\% de certeza. A consulta por \texttt{Fenchurch} retorna um resultado positivo, porém este é um falso positivo, visto que esta string não faz parte do conjunto.
 
 \subsection{Probabilidade de falso positivo}\label{sec:bloom:false}
 
 A probabilidade de um falso positivo é determinada pela probabilidade de colisão. Assim, quanto mais bits forem usados no filtro de Bloom, menor a probabilidade de um falso positivo. Para diminuir a probabilidade de colisões é possível também utilizar múltiplas funções \emph{hash} para cada elemento, mas somente até um certo ponto, onde realizar múltiplos hashes por elemento acaba aumentando a probabilidade de colisões.
 
-É possível calcular a probabilidade de um falso positivo. Considere uma tabela $B[1..m]$, após inserir $n$ elementos e usando $k$ funções \emph{hash}. Se $X_i$ é a variável aleatória que fornece o valor de $B[i]$, então:
+É possível calcular a probabilidade de um falso positivo. Considere uma tabela $B[1..m]$, após inserir os elementos do conjunto $X$, com $|X| = n$, e usando $k$ funções \emph{hash}. Se $X_i$ é a variável aleatória que fornece o valor de $B[i]$, então:
 \[
 \Pr[X_i = 0] = \Pr\left[\bigwedge_{x \in X, 1 \leq j \leq k} h_j(x) \neq i \right] = \left( 1 - \frac{1}{m}\right)^{kn}
 \]
@@ -78,12 +95,15 @@ Seja \textsc{FalsoPositivo} o evento do filtro reportar pertinência para um ele
 \Pr[\textsc{FalsoPositivo}] = \Pr\left[\bigwedge_{1 \leq j \leq k} X_{h_j(x)} = 1 \right] = \left( 1 - \left( 1 - \frac{1}{m}\right)^{kn} \right)^k \approx \left( 1 - \mathrm{e} ^{-kn/m} \right)^k
 \]
 
-É fácil ver que a probabilidade de falsos positivos cresce conforme $n$ cresce. Por isso, é preciso dimensionar o filtro de Bloom de acordo com o número de elementos no conjunto. Se definirmos $q = m/n$ (quantidade de bits por elemento, reescrevemos a última probabilidade como:
+A aproximação acima se dá pois $(1 - x)^y \approx \mathrm{e}^{-xy}$, conforme $x$ se aproxima de zero. É fácil ver que a probabilidade de falsos positivos cresce conforme $n$ cresce. Por isso, é preciso dimensionar o filtro de Bloom de acordo com o número de elementos no conjunto. Se definirmos $q = m/n$ (quantidade de bits por elemento, reescrevemos a última probabilidade como:
 \[
 \Pr[\textsc{FalsoPositivo}] \approx \left( 1 - \mathrm{e} ^{-k/q} \right)^k
 \]
 
-A Figura~\ref{fig:probfalso1} mostra como esta probabilidade se comporta para diferentes valores de $k$ e $q$.
+A Figura~\ref{fig:probfalso1} mostra como esta probabilidade se comporta para diferentes valores de $k$ e $q$. Bonomi et al. \cite{bonomi2006improved} mostram ainda que a probabilidade é minimizada quando $k = q \ln 2$. Assim, é possível definir a probabilidade mínima de falsos positivos a partir do número de bits por elemento:
+\[
+\Pr[\textsc{FalsoPositivo}] = (1-e^{\ln(2)}) ^ {q \ln(2)} = ((1/2)^{\ln(2)})^q \approx \left( 0,6185 \right)^q
+\]
 
 \begin{figure}[!htbp]
 \centering
@@ -97,7 +117,7 @@ A Figura~\ref{fig:probfalso1} mostra como esta probabilidade se comporta para di
         colorbar, 
         colorbar style={
             ylabel=falsos positivos,
-            yticklabels={0, 0.1\%, 1\%, 10\%, 100\%},
+            yticklabels={0, {0,1\%}, 1\%, 10\%, 100\%},
         },
         colormap={}{ gray(0cm)=(1); gray(1cm)=(0);},
         xlabel=bits / elemento ($q$),
@@ -116,11 +136,6 @@ A Figura~\ref{fig:probfalso1} mostra como esta probabilidade se comporta para di
 \label{fig:probfalso1}
 \end{figure}
 
-Bonomi et al. \cite{bonomi2006improved} mostram ainda que a probabilidade é minimizada quando $k = q \ln 2$. Assim, é possível definir a probabilidade mínima de falsos positivos a partir do número de bits por elemento:
-\[
-\Pr[\textsc{FalsoPositivo}] = (1-e^{\ln(2)}) ^ {q \ln(2)} = ((1/2)^{\ln(2)})^q \approx \left( 0.6185 \right)^q
-\]
-
 É possível ver na Figura~\ref{fig:probfalso2} que a probabilidade de falsos positivos cai exponencialmente em relação ao número de bits por elemento no filtro.
 
 \begin{figure}[!htbp]
@@ -134,7 +149,7 @@ Bonomi et al. \cite{bonomi2006improved} mostram ainda que a probabilidade é min
         grid=both,
         xlabel=bits / elemento (q),
 		ylabel={Pr[\textsc{FalsosPositivos}]},
-        yticklabels={0, 0.001\%, 0.01\%, 0.1\%, 1\%, 10\%, 100\%},
+        yticklabels={0, {0,001\%}, {0,01\%}, {0,1\%}, 1\%, 10\%, 100\%},
         ymode=log,
         ymax=1,
 		xmin=0,
@@ -148,25 +163,23 @@ Bonomi et al. \cite{bonomi2006improved} mostram ainda que a probabilidade é min
 
 Desta forma, a escolha do número de bits por elemento torna-se crucial para dimensionar a quantidade de falsos positivos. Esta análise precisa ser feita \emph{a priori}, pois não é possível redimensionar um filtro de Bloom sem modificar suas propriedades estatísticas. 
 
-Existem variações do algoritmo que mitigam este problema. Por exemplo, os \emph{Dynamic Bloom Filters} \cite{guo2010dynamic} colocam um limite superior na probabilidade de falso positivo criando um novo filtro quando o limite é ultrapassado, penalizando as consultas em um fator logaritmico, em relação ao tamnho do conjunto, pois precisam verificar vários filtros. 
-
-Já os \emph{Block-partitioned Bloom Filters} \cite{papapetrou2010cardinality} penalizam tanto a inserção quanto a consulta de forma similar, porém por inserir e verificar os elementos em todos os filtros, mantêm as propriedades algébricas de união entre filtros através de operações booleanas entre seus vetores.
+Existem variações do algoritmo que mitigam este problema. Por exemplo, os \emph{Dynamic Bloom Filters} \cite{guo2010dynamic} colocam um limite superior na probabilidade de falso positivo criando um novo filtro quando o limite é ultrapassado, penalizando as consultas em um fator logaritmico, em relação ao tamanho do conjunto, pois precisam verificar vários filtros. Já os \emph{Block-partitioned Bloom Filters} \cite{papapetrou2010cardinality} penalizam tanto a inserção quanto a consulta de forma similar, porém por inserir e verificar os elementos em todos os filtros, mantêm as propriedades algébricas de união entre filtros através de operações booleanas entre seus vetores.
 
 \subsection{Estimativa de cardinalidade}\label{sec:bloom:cardinality}
 
-É possível estimar a cardinalidade do conjunto representado por um filtro de Bloom \cite{whang1990linear,papapetrou2010cardinality}. O princípio é análogo àquele empregado na Seção~\ref{sec:bloom:false} para estimar a probabilidade de falsos positivos. Seja $T$ a variável aleatória que representa o número de bits $1$ após inserir $n$ elementos num filtro $B[1..m]$ e $k$ funções \emph{hash}. Portanto, $T = \sum_{1 \leq i \leq m} X_i = 1$ e a esperança $E[T]$ é uma função $S(n)$ (para $m$ e $k$ fixos) tal que:
+É possível estimar a cardinalidade do conjunto representado por um filtro de Bloom \cite{whang1990linear,papapetrou2010cardinality}. O princípio é análogo àquele empregado na seção anterior para estimar a probabilidade de falsos positivos. Seja $T$ a variável aleatória que representa o número de bits $1$ após inserir $n$ elementos num filtro $B[1..m]$ e $k$ funções \emph{hash}. Portanto, $T = \sum_{1 \leq i \leq m} X_i = 1$ e a esperança $E[T]$ é uma função $S(n)$ (para $m$ e $k$ fixos) tal que:
 \[
-E[T] = \sum_{1 \leq i \leq m} E[X_i] = m \times Pr[X_i = 1] = \hat{S}(n) = m \times \left( 1 - \left( 1 - \frac{1}{m}\right)^{kn} \right)
+S(n) = E[T] = \sum_{1 \leq i \leq m} E[X_i] = m \times Pr[X_i = 1] = m \times \left( 1 - \left( 1 - \frac{1}{m}\right)^{kn} \right)
 \]
 
-Desta forma, é possível estimar $n$ a partir de $t$:
+Desta forma, é possível estimar $n$ a partir do número $t$ de bits 1 existentes no filtro:
 \[
-\hat{n} = \hat{S}^{-1}(t) = \frac{\ln \left( 1 - \frac{t}{m} \right)}{k \times \ln \left( 1 - \frac{1}{m} \right)} \approx \frac{-m}{k} \times \ln \left( 1-\frac{t}{m} \right)
+n = \hat{S}^{-1}(t) = \frac{\ln \left( 1 - \frac{t}{m} \right)}{k \times \ln \left( 1 - \frac{1}{m} \right)} \approx \frac{-m}{k} \times \ln \left( 1-\frac{t}{m} \right)
 \]
 
-Perceba que esta estimativa é extremamente dependente da quantidade de bits por elemento no filtro. Portanto, dado um certo filtro de Bloom, apenas um intervalo definido de cardinalidades tem um erro entro de um limite aceitável. Papapetrou et al. \cite{papapetrou2010cardinality} mostram que é possível definir um limite inferior na probabilidade da cardinalidade real estar num certo intervalo $(n_a, n_b)$ (com $\hat{S}^{-1}(t-1) \leq n_a \leq n_b \leq \hat{S}^{-1}(t+1)$). Esta probabilidade se dá pela fórmula:
+A aproximação acima se dá pois $\ln(1 + x) \approx x$, conforme $x$ se aproxima de zero. Perceba que esta estimativa é extremamente dependente da quantidade de bits por elemento no filtro. Portanto, dado um certo filtro de Bloom, apenas um intervalo definido de cardinalidades tem um erro dentro de um limite aceitável. Papapetrou et al. \cite{papapetrou2010cardinality} mostram que é possível definir um limite inferior na probabilidade da cardinalidade real estar num certo intervalo $(n_a, n_b)$ (com $S^{-1}(t-1) \leq n_a \leq n_b \leq S^{-1}(t+1)$). Esta probabilidade se dá pela fórmula:
 \[
-Pr[n_a \leq n \leq n_b] = 1 - e^{-\frac{(t+1-\hat{S}(n_b))^2}{2\hat{S}(n_b)}} - e^{t-1-\hat{S}(n_a)} \times \left( \hat{S}(n_a) / (t-1) \right)^{t-1}
+Pr[n_a \leq n \leq n_b] \geq 1 - e^{-\frac{(t+1-S(n_b))^2}{2S(n_b)}} - e^{t-1-S(n_a)} \times \left( S(n_a) / (t-1) \right)^{t-1}
 \]
 
 Este é apenas um limite inferior. Na prática é possível estimar valores bem maiores. Em especial, para estimar cardinalidades não há vantagens em utilizar múltiplas funções \emph{hash}, pois isto somente aumentaria a densidade de bits iguais a 1 no filtro. Whang et al. introduziram o algoritmo \textsc{Linear Counting} \cite{whang1990linear} que utiliza um filtro de Bloom com apenas uma função \emph{hash} para estimar a cardinalidade. Assim,
@@ -179,7 +192,7 @@ Em  \cite{whang1990linear} também é mostrado que o erro padrão da estimativa 
 \sigma_{\hat{n}} = \frac{\sqrt{m(e^{n/m} - (n/m) - 1)}}{n}
 \]
 
-Assim, assumindo um filtro com quantidades diversas de bits, é possível ver a degradação do erro padrão conforme o fator de carga aumenta (Figura \ref{fig:bloom_cardinality}).
+Assim, assumindo um filtro com quantidades diversas de bits ($m$), é possível ver a degradação do erro padrão conforme o fator de carga aumenta (Figura \ref{fig:bloom_cardinality}).
 
 \begin{figure}[!htbp]
 \centering
@@ -197,21 +210,22 @@ Assim, assumindo um filtro com quantidades diversas de bits, é possível ver a 
 		ymin=0, ymax=1,
 		xmin=0, xmax=20, 
 		legend columns=1, 
-	    legend style={legend pos=outer north east,}
+	    legend style={legend pos=outer north east,},
     ]
     
+    \addlegendimage{empty legend}
+            
     \addplot[line width=1pt,domain=0:20,samples=30]{p(1024*x, 1024)};
     \addplot[line width=2pt,domain=0:20,samples=30]{p(8092*x, 8092)};
     \addplot[line width=3pt,domain=0:20,samples=30]{p(65536*x, 65536)};
     \addplot[line width=4pt,domain=0:20,samples=30]{p(524288*x, 524288)};
-	\legend{1024 bits, 8092 bits, 65536 bits, 524288 bits};
+	\legend{\textbf{m}, 1024 bits, 8092 bits, 65536 bits, 524288 bits};
 
 	\end{axis}
 \end{tikzpicture}}
 \caption{Erro padrão por fator de carga para filtros de vários tamanhos.}
 \label{fig:bloom_cardinality}
 \end{figure}
-
 
 \subsection{\emph{Counting Bloom filters}}\label{sec:bloom:counting}
 
@@ -269,14 +283,14 @@ Agora a Figura~\ref{fig:bloom2} mostra um exemplo de filtro de Bloom com contage
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[scale=0.45]{files/bloom2.pdf}
+  \includegraphics[scale=0.45]{figures/bloom2.pdf}
   \caption{Exemplo de filtro de bloom com contagem}
   \label{fig:bloom2}
 \end{figure}
 
-A remoção neste filtro baseia-se na ausência de overflows em seus contadores. Para tanto, é preciso dimensionar o tamanho destes contadores de forma a minimizar a probabilidade de overflow. Como originalmente o filtro usa apenas um bit por posição no vetor, qualquer número de bits adicionais escolhidos para representar o contador aumenta significativamente o espaço necessário para armazenar a estrutura. Normalmente, 4 bits são suficientes para a maior parte das aplicações, o que faz com que estes filtros usem quatro vezes mais espaço que filtros normais.
+A remoção neste filtro baseia-se na ausência de \emph{overflows} (quando um valor do vetor $B$ atinge $2^b$) em seus contadores. Para tanto, é preciso dimensionar o tamanho destes contadores de forma a minimizar a probabilidade de overflow. Como originalmente o filtro usa apenas um bit por posição no vetor, qualquer número de bits adicionais escolhidos para representar o contador aumenta significativamente o espaço necessário para armazenar a estrutura. Normalmente, 4 bits são suficientes para a maior parte das aplicações, o que faz com que estes filtros usem quatro vezes mais espaço que filtros normais.
 
-O número de bits por contador determina a probabilidade de \emph{overflow}. \emph{Overflows} em \emph{counting Bloom filters} precisam ser ativamente tratados. Se um \emph{overflow} ocorrer é preciso manter o contador no máximo valor possível. De forma equivalente, ao tentar decrementar uma posição já no maior valor possível, é preciso mantê-la nesse mesmo valor. Faz-se isto para evitar a introdução de falsos negativos.
+O número de bits por contador determina a probabilidade de \emph{overflow}. \emph{Overflows} em \emph{counting Bloom filters} precisam ser tratados. Se um \emph{overflow} ocorrer é preciso manter o contador no máximo valor possível. De forma equivalente, ao tentar decrementar uma posição já no maior valor possível, é preciso mantê-la nesse mesmo valor. Faz-se isto para evitar a introdução de falsos negativos.
 
 Na prática, entretanto, \emph{overflows} devem ser consideravelmente raros. A probabilidade de um \emph{overflow} dado que cada contador usa $b$ bits, após inserir $m$ elementos, usando 10 bits por elemento e otimizando o número de funções \emph{hash} é:
 \[
@@ -284,7 +298,7 @@ Pr[\textsc{overflow}] \leq n \left( \frac{\mathrm{e} \ln 2}{2^b} \right)^{2^b}
 \]
 como provado por Fan et al. \cite{fan1998summary}. Assim, ao usar 4 bits para os contadores, a probabilidade de overflow concentra-se em:
 \[
-Pr[\textsc{overflow em 4 bits}] \leq 1.37 \times 10^{-15} \times n
+Pr[\textsc{overflow em 4 bits}] \leq 1,37 \times 10^{-15} \times n
 \]
 
 Esta probabilidade baseia-se na possibilidade de produzir funções \emph{hash} realmente aleatórias, o que pode ser aproximado, mas não pode ser garantido. Em um pior caso em especial, se o mesmo elemento for repetidamente oferecido à estrutura, a probabilidade de \emph{overflow} torna-se criticamente alta.
@@ -299,7 +313,7 @@ O filtro de Bloom, em sua simplicidade, tem limitações que posam como desafios
     Discute esquemas de compressão para otimizar o tamanho de filtros enviados através de rede ou salvos em disco. O objetivo é construir filtros com mais bits e menos funções \emph{hash}, de forma a minimizar o tamanho comprimido e/ou aumentar a precisão. Especialmente útil em caso de caches distribuídos. 
 
   \item[\emph{Distance-sensitive Bloom Filters} \cite{kirsch2006distance}] 
-    Responde consultas do tipo "algum elemento próximo a $x$ pertence a $S$?", dada uma métrica apropriada, utilizando funções \emph{hash} sensíveis a localidade, com possibilidade tanto de falsos positivos como falsos negativos. Esta variante é bastante útil para detecção de plágio, por exemplo.
+    Responde consultas do tipo ``algum elemento próximo a $x$ pertence a $S$?'', dada uma métrica apropriada, utilizando funções \emph{hash} sensíveis a localidade, com possibilidade tanto de falsos positivos como falsos negativos. Esta variante é bastante útil para detecção de plágio, por exemplo.
 
   \item[\emph{Dynamic Bloom Filters} \cite{guo2010dynamic}] 
     Permite redimensionar dinamicamente filtros de Bloom sem perder suas propriedades estatísticas. Baseia-se na criação de múltiplos filtros com um limite superior na probabilidade de falsos positivos, i.e., quando um filtro alcança uma taxa de falsos positivos muito alta, outro filtro vazio é criado. Nesta modalidade, a complexidade das operações padrão é maior, entretanto, na prática isso não posa como um problema. É possível dimensionar o tamanho dos filtros a serem criados de forma a amortizar a quantidade de filtros criados ao longo do tempo.
@@ -362,16 +376,12 @@ Com estes dados, foram realizados dois testes: um para observar a quantidade de 
 		{\bf palavras verificadas} & 3704 & 16384 \\
 		\hline 
 	\end{tabular}
-	\caption{Configuração dos filtros de teste}
+	\caption{Configuração dos filtros de teste.}
 	\label{table:bloom_test_setup}
 \end{center}
 \end{table}
 
-Durante a inserção das palavras, a cada 2.5\% de palavras inseridas, o teste era realizado: no caso dos falsos positivos, o conjunto de verificação era executado contra o filtro verificando a porcentagem de falsos positivos; no caso do teste de cardinalidade, estimando a cardinalidade e registrando a razão entre esta e a cardinalidade real do conjunto até o momento.
-
-Como os dois testes foram realizados com conjuntos de tamanhos diferentes, todos os resultados serão apresentados aqui em valores relativos de fator de carga.
-
-No teste de falsos positivos, como pode ser visto na Figura~\ref{fig:bloom_test_falsep}, a quantidade dos mesmos ficou extremamente aderente à teoria. É possível perceber como o fator de carga sozinho é capaz de influenciar a probabilidade de falsos positivos. O valor esperado neste teste é o mesmo descrito na Seção~\ref{sec:bloom:false}.
+Durante a inserção das palavras, a cada 2,5\% de palavras inseridas, o teste era realizado: no caso dos falsos positivos, o conjunto de verificação era executado contra o filtro verificando a porcentagem de falsos positivos; no caso do teste de cardinalidade, estimando a cardinalidade e registrando a razão entre esta e a cardinalidade real do conjunto até o momento. Como os dois testes foram realizados com conjuntos de tamanhos diferentes, todos os resultados serão apresentados aqui em valores relativos de fator de carga. No teste de falsos positivos, como pode ser visto na Figura~\ref{fig:bloom_test_falsep}, a quantidade dos mesmos ficou extremamente aderente à teoria. É possível perceber como o fator de carga sozinho é capaz de influenciar a probabilidade de falsos positivos. O valor esperado neste teste é o mesmo descrito na Seção~\ref{sec:bloom:false}.
 
 \begin{figure}[!htbp]
 \centering
@@ -383,7 +393,7 @@ No teste de falsos positivos, como pode ser visto na Figura~\ref{fig:bloom_test_
 	\begin{axis}[
 	    scaled ticks=false, 
         grid=both,
-        xlabel=load factor ($n/m$),
+        xlabel=fator de carga ($n/m$),
 		ylabel=falsos positivos,
 		yticklabel=\pgfmathparse{100*\tick}\pgfmathprintnumber{\pgfmathresult}\,\%,
 		xticklabel=\pgfmathparse{100*\tick}\pgfmathprintnumber{\pgfmathresult}\,\%,
@@ -417,8 +427,8 @@ Para o teste de cardinalidade foram utilizados filtros com uma quantidade de bit
         title={shakespeare},
 	    scaled ticks=false, 
         grid=both,
-        xlabel=load factor ($n/m$),
-		ylabel=erro ($\hat{n}/n-1$),
+        xlabel=fator de carga ($n/m$),
+		ylabel=desvio ($\hat{n}/n-1$),
 		yticklabel=\pgfmathparse{100*\tick}\pgfmathprintnumber{\pgfmathresult}\,\%,
 		xticklabel=\pgfmathparse{100*\tick}\pgfmathprintnumber{\pgfmathresult}\,\%,
 		ymin=-0.1,ymax=0.1,ystep=0.02,
@@ -463,7 +473,7 @@ Para o teste de cardinalidade foram utilizados filtros com uma quantidade de bit
 
 	\end{axis}
 \end{tikzpicture}}
-\caption{Erro observado por funções \emph{hash}}
+\caption{Desvio observado por fator de carga}
 \label{fig:bloom_test_cardinality}
 \end{figure}
 

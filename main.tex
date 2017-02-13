@@ -20,10 +20,13 @@
 \usepackage{relsize}
 \usepackage{setspace}
 
-\setstretch{1.5}
+%\setstretch{1.5}
 
+\input{uerj/algptbr.tex}
 
 \setlength{\headheight}{15.1pt} 
+
+\pgfkeys{/pgf/number format/.cd, use comma, 1000 sep={.}}
 
 \fancypagestyle{plain}{\fancyfoot[C]{}\fancyhead[R]{\thepage}}
 \pagestyle{plain}
@@ -41,33 +44,37 @@
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
 \renewcommand{\algorithmicensure}{\textbf{Output:}}
 
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+\newcolumntype{N}{@{}m{0pt}@{}}
 
 \title{Estruturas de Dados Probabilísticas Aplicadas à Representação Implícita de Grafos}
 \author{Juan Lopes}
 
 
 %\includeonly{01_intro}
-%\includeonly{1_intro,2_concepts}
-\includeonly{3_probds}
-%\includeonly{04_countmin}
-%\includeonly{05_minhash,06_hyperloglog}
-%\includeonly{06_hyperloglog}
-%\includeonly{07_graphs}
+%includeonly{1_intro,2_concepts}
+%\includeonly{3_probds}
+\includeonly{4_graphs}
+%\includeonly{9_conclusion}
 
 \begin{document}
 
 \maketitle
 
-%\linespread{1}\selectfont
+\linespread{1}\selectfont
 \tableofcontents
 
-%\linespread{1.5}\selectfont
+\linespread{1.5}\selectfont
 \include{1_intro}
 \include{2_concepts}
 \include{3_probds}
 \include{4_graphs}
 \include{9_conclusion}
 
+
+\cleardoublepage
+
+\addcontentsline{toc}{chapter}{Referências Bibiográficas}
 
 \setstretch{1}
 \bibliographystyle{alpha}

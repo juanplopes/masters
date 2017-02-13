@@ -1,6 +1,106 @@
 \chapter{Estruturas de dados probabilísticas}\label{cap:probds}
 
+Estruturas de dados probabilísticas permitem estimar propriedades sobre fluxos de dados utilizando menos recursos que suas alternativas determinísticas. Isso é possível através da sub-representação dos dados subjacentes, para compor as operações sobre a estrutura.
+
+Neste capítulo analisaremos quatro estruturas de dados probabilísticas que utilizam funções \emph{hash} para representar operações em conjuntos e multiconjuntos utilizando consideravelmente menos memória que suas representações determinísticas. A Figura~\ref{fig:probds_table} sumariza estas estruturas e as operações que cada uma é capaz de efetuar. Considere $n$ a cardinalidade de elementos distintos destes (multi)conjuntos. Os detalhes de funcionamento de cada uma destas estruturas serão abordados nas próximas seções.
+\begin{figure}[!htbp]
+\centering
+\begin{tabular}{ | c | c | }
+\hline
+    \textbf{Estrutura} & \textbf{Consulta} \\
+\hline
+\hline
+    \multirow{2}{*}{Filtro de Bloom} &     
+    Pertinência \\
+\cline{2-2}
+    & Cardinalidade \\
+\hline
+\hline
+    \multirow{3}{*}{Count-Min sketch} &      
+    Frequência \\
+\cline{2-2}
+    & Produto escalar \\
+\cline{2-2}
+    & Somatório de intervalos \\
+\hline
+\hline
+  MinHash & 
+  Similaridade \\
+\hline
+\hline
+  HyperLogLog & 
+  Cardinalidade \\
+\hline
+\end{tabular}
+\caption{Sumário de estruturas abordadas neste capítulo}
+\label{fig:probds_table}
+\end{figure}
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% INCLUDES
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 \input{3x1_bloom}
-%\input{3x2_countmin}
-%\input{3x3_minhash}
-%\input{3x4_hyperloglog}
+\input{3x2_countmin}
+\input{3x3_minhash}
+\input{3x4_hyperloglog}
+
+
+
+\section{Considerações sobre as estruturas}
+
+Neste capítulo, apresentamos quatro estruturas de dados importantes para a representação probabilística de conjuntos. Cada uma delas permite certas operações sobre os conjuntos que representam. Nesta seção, destacaremos as similaridades e diferenças entre essas estruturas. A Figura~\ref{fig:probds_table2} revisa a tabela apresentada no início do capítulo, que resume as estruturas apresentadas nas seções anteriores, incluindo os parâmetros e o cálculo do limite superior do erro descritos ao longo do capítulo.
+
+\begin{figure}[!htbp]
+\centering
+\scalebox{0.78}{\begin{tabular}{ | c | c | c | c | N}
+\hline
+    \textbf{Estrutura} & \textbf{Parâmetros} & \textbf{Consulta} & \textbf{Erro} &\\[10pt]
+\hline
+\hline
+    \multirow{2}{*}{Filtro de Bloom} &     
+    \multirow{2}{*}{\shortstack{$m$ bits \\ $k$ funções \emph{hash}}} & 
+    Pertinência & 
+    $\Pr[\textsc{FalsoPositivo}] \approx 0,6185^{m/n}$  &\\[17pt]
+\cline{3-4}
+    & & Cardinalidade & 
+    $\sigma_{\hat{n}} = \frac{\sqrt{m(e^{n/m} - (n/m) - 1)}}{n}$  &\\[17pt]
+\hline
+\hline
+    \multirow{3}{*}{Count-Min sketch} &      
+    \multirow{3}{*}{\shortstack{$m = \lceil e/\epsilon \rceil$ \\ $k = \lceil \ln(1/\delta) \rceil$}} & 
+    Frequência & 
+    $\Pr\left[ \widehat{A[i]} > A[i] + \epsilon \lVert A \rVert_1 \right] \leq \delta$  &\\[17pt]
+\cline{3-4}
+    & & Produto escalar & 
+    $\Pr\left[ \widehat{A \cdot B} > A \cdot B + \epsilon \lVert A \rVert_1 \lVert B \rVert_1 \right] \leq \delta$  &\\[17pt]
+\cline{3-4}
+    & & Somatório de intervalos & 
+    $\Pr\left[ \widehat{Q(a, b)} > Q(a, b) + 2 \epsilon \log_2 n \lVert A \rVert_1 \right] \leq \delta$ &\\[17pt]
+\hline
+\hline
+  MinHash & 
+  $k \geq \frac{2+\theta}{\theta^2} \times \ln(2/\delta)$ & 
+  Similaridade & 
+  $ \Pr\left[ \left| \frac{\hat{J(A, B)}}{J(A,B)} -1 \right| > \theta \right] \leq \delta $ &\\[17pt]
+\hline
+\hline
+  HyperLogLog & 
+  $m \times \lceil \log \log n \rceil$ bits & 
+  Cardinalidade & 
+  $\sigma_{\hat{n}} \approx 1,03896/\sqrt{m}$ &\\[17pt]
+\hline
+\end{tabular}}
+\caption{Sumário de estruturas abordadas neste capítulo}
+\label{fig:probds_table2}
+\end{figure}
+
+\subsection{filtro de Bloom e \emph{Count-Min sketch}}
+
+É possível perceber uma certa semelhança na construção das estruturas filtro de Bloom e \emph{Count-Min sketch}. Além disso, são as únicas estruturas dentre as quatro que possuem complexidade de espaço linear. De fato, \emph{Count-Min sketch} é descrita na literatura como uma variante de um filtro de Bloom, conhecida como \emph{Spectral Bloom filter} \cite{cohen2003spectral}. É possível, entretanto, prever a probabilidade de erro (falsos positivos) no filtro de Bloom com certa segurança. No caso de \emph{Count-Min sketch} é preciso recorrer à desigualdade de Markov para definir um limite superior no erro da estimativa da frequência de elementos específicos. Por este motivo, seu erro teórico é superestimado. Por outro lado, \emph{Count-Min} permite outras operações quando usada para representar vetores: é possível estimar também o produto escalar usando a mesma estrutura e o somatório de intervalos de elementos no vetor com uma simples adaptação na representação.
+
+\subsection{\emph{MinHash} e \emph{HyperLogLog}}
+
+\emph{MinHash} e \emph{HyperLogLog} são menos ``versáteis'' se comparadas as outras estruturas, porém ambas possuem complexidade de espaço sublinear. São especializadas em estimar um parâmetro apenas: similaridade de Jaccard entre conjuntos, no caso do \emph{MinHash} e cardinalidade de elementos distintos em multiconjuntos, no caso do \emph{HyperLogLog}. Ambas as estruturas baseiam-se na definição de um estimador para a métrica que representam e na composição desses estimadores para redução da variância. No caso de \emph{MinHash}, o estimador é definido pelo menor resultado de uma função \emph{hash} aplicada a cada elemento do conjunto; a probabilidade de dois conjuntos terem o mesmo menor elemento é igual à similaridade de Jaccard entre os dois. No caso do \emph{HyperLogLog}, o estimador é definido pelo maior prefixo $0^{p-1}1$ visto na representação binária do resultado de uma função \emph{hash} aplicada a cada elemento do multiconjunto; a estimativa da cardinalidade de elementos distintos é dada por $2^p$.
+
+Há sinergia entre \emph{MinHash} e \emph{HyperLogLog} também para estimar a cardinalidade da interseção de conjuntos. Dado que, para dois conjuntos $A$ e $B$, \emph{MinHash} permite estimar $\frac{|A \cap B|}{|A \cup B|}$ e \emph{HyperLogLog} permite estimar $|A \cup B|$, combinando as duas estruturas é possível estimar a cardinalidade $|A \cap B|$ com erro relativo apenas ao tamanho da interseção dos conjuntos.

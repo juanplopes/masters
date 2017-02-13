@@ -2,7 +2,7 @@
 \section{\emph{MinHash}}\label{sec:minhash}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-\emph{MinHash} é um algoritmo \emph{hash}ing sensível a localização que permite estimar a semelhança entre conjuntos de forma indireta, através da aproximação do coeficiente de similaridade de \emph{Jaccard}. 
+\emph{MinHash} é um algoritmo \emph{hashing} sensível a localização que permite estimar a semelhança entre conjuntos de forma indireta, através da aproximação do coeficiente de similaridade de \emph{Jaccard}. 
 
 O algoritmo foi inventado por Andrei Broder \cite{broder1997resemblance} como forma de detectar páginas quase-duplicadas no mecanismo de busca Alta Vista. Antes disso, Heintze \cite{heintze1996scalable} e Manber \cite{manber1994finding} já haviam descrito um mecanismo de \emph{fingerprinting} de documentos para rápida indexação e busca por similaridade.  Entretanto, somente com o artigo de Broder, a técnica ganhou mais notoriedade.
 
@@ -10,7 +10,7 @@ O algoritmo foi inventado por Andrei Broder \cite{broder1997resemblance} como fo
 
 \subsection{Definição}
 
-O objetivo do algoritmo \emph{MinHash} é estimar o coeficiente de Jaccard. Este coeficiente é definido, para dois conjuntos $A$ e $B$, como a razão entre a cardinalidade da interseção e a cardinalidade da união dos conjuntos \cite{real1996probabilistic}.
+O objetivo do algoritmo \emph{MinHash} é estimar o coeficiente de Jaccard. Este coeficiente é definido, para dois conjuntos $A$ e $B$, como a razão $J(A, B)$ entre a cardinalidade da interseção e a cardinalidade da união dos conjuntos \cite{real1996probabilistic}. Isto é,
 \[
 J(A, B) = \frac{| A \cap B |}{| A \cup B|}
 \]
@@ -25,7 +25,7 @@ B &= \{1, 3, 7, 19, 20, 35\}\text{,}
 
 o valor do coeficiente é:
 \[
-J(A, B) = \frac{ |\{1, 3, 7, 20 \}| }{ |\{1, 3, 7, 14, 19, 20, 35\}| } = \frac{4}{7} = 0.571428\dots
+J(A, B) = \frac{ |\{1, 3, 7, 20 \}| }{ |\{1, 3, 7, 14, 19, 20, 35\}| } = \frac{4}{7}
 \]
 
 Embora seja trivial calcular o coeficiente de \emph{Jaccard}, pode ser computacionalmente custoso realizar a comparação entre muitos pares de conjuntos com números muito grandes de elementos. Por isso, pode ser vantajoso pré-processar informações para cada conjunto que auxiliem na posterior aproximação do coeficiente. Em sua variante básica, tal pré-processamento consiste em aplicar um número constante de funções \emph{hash} sobre cada elemento de um conjunto e guardar o mínimo valor obtido para cada função. O resultado obtido é chamado de \emph{assinatura} do conjunto. Usando as assinaturas de cada conjunto é possível estimar a semelhança entre eles em tempo constante \cite{broder1997resemblance}, como veremos logo adiante.
@@ -57,9 +57,9 @@ Portanto, $S_1 \cup S_2 \cup S_3 \cup S_4 = \{a, b, c, d, e\}$ e uma matriz cara
 
 Esta matriz característica geralmente não é a estrutura de dados usada na implementação dos conjuntos, e sim apenas uma forma conveniente de representá-los para facilitar a compreensão do algoritmo.
 
-Para computar a assinatura de um conjunto, primeiro obtemos uma permutação das linhas da matriz característica anterior. Assim, a assinatura $h_{\min}(S)$ de um certo conjunto $S$ é definido pelo primeiro elemento na permutação que pertence a $S$.
+Para computar a assinatura de um conjunto, primeiro obtemos uma matriz característica com uma permutação aleatória de linhas. Assim, a assinatura $h_{\min}(S)$ de um certo conjunto $S$ é definido pelo primeiro elemento na permutação que pertence a $S$.
 
-Considere no exemplo a permutação $\{b, e, a, d, c\}$. A partir dela, podemos reorganizar a matriz característica como mostrado na Figura~\ref{fig:minhash_charmatrix_permutated}.
+Considere no exemplo a permutação $(b, e, a, d, c)$. A partir dela, podemos definir a matriz característica mostrada na Figura~\ref{fig:minhash_charmatrix_permutated}.
 
 \begin{figure}[!htbp]
 \centering
@@ -73,17 +73,17 @@ Considere no exemplo a permutação $\{b, e, a, d, c\}$. A partir dela, podemos 
   $c$ & 0   & \colorbox{gray!30}{\textbf{1}}   & 0   & 1   \\
 \hline
 
-  \textbf{\emph{min hash}} & a & c & b & a \\
+  $h_{min}$ & a & c & b & a \\
 
 \end{tabular}
-\caption{Matriz permutada, destacando o \emph{min hash} de cada conjunto.}
+\caption{Matriz permutada, destacando o $h_{min}$ de cada conjunto.}
 \label{fig:minhash_charmatrix_permutated}
 \end{figure}
 
 
 Broder \cite{broder1997resemblance} mostra que, para dois conjuntos $A$ e $B$, e um \emph{min hash} $h_{\min}$ aleatoriamente escolhidos, a probabilidade de terem o mesmo valor para $h_{\min}$ é igual ao próprio índice de \emph{Jaccard}, conforme se demonstra a seguir.
 
-Parte-se do princípio que, considerando as colunas para os conjuntos $A$ e $B$ na matriz característica, os conjuntos $X$, $Y$ e $Z$ particionam o conjunto das linhas de $M$: onde ambas as colunas têm valor \textbf{1} (subconjunto $X$ de linhas), onde cada coluna tem um valor diferente (subconjunto $Y$ de linhas) e onde ambas as linhas têm valor \textbf{0} (subconjunto $Z$ de linhas).
+Parte-se do princípio que, considerando as colunas para os conjuntos $A$ e $B$ na matriz característica, os conjuntos $X$, $Y$ e $Z$ particionam o conjunto das linhas de $M$: onde ambas as colunas têm valor $1$ (subconjunto $X$ de linhas), onde cada coluna tem um valor diferente (subconjunto $Y$ de linhas) e onde ambas as linhas têm valor $0$ (subconjunto $Z$ de linhas).
 
 Por um lado, $J(A, B) = |X|/(|X|+|Y|)$, pois $X$ representa $A \cap B$ e $Y$ representa $A \cup B - A \cap B$. Por outro lado, dada uma permutação aleatória da matriz, a probabilidade que uma linha em $X$ apareça antes de uma linha em $Y$ (i.e. $h_{\min}(A) = h_{\min}(B)$) antes de uma linha do tipo $Y$ (i.e. $h_{\min}(A) \neq h_{\min}(B)$) é exatamente $|X|/(|X|+|Y|)$. Portanto,
 \[
@@ -103,10 +103,7 @@ onde
 \end{cases}
 \]
 
-Este estimador, entretanto, assume apenas os valores $0$ ou $1$ exatamente. Possui, portanto, uma grande variância em relação ao valor esperado. Entretanto, serve como ponto de partida para as duas principais variantes do algoritmo, como veremos a seguir.
-
-\subsection{Exemplo}\label{sec:minhash:example}
-
+Este estimador, entretanto, assume apenas os valores $0$ ou $1$. Possui, portanto, uma grande variância em relação ao valor esperado. Entretanto, serve como ponto de partida para as duas principais variantes do algoritmo, como veremos a seguir.
 
 \subsection{Variante com múltiplas funções \emph{hash}}
 
@@ -114,7 +111,7 @@ Uma variante simples do algoritmo \emph{MinHash} utiliza múltiplas funções \e
 
 Isto é, utiliza-se $k$ funções \emph{hash} $\{h_1, h_2, ... ,h_k\}$ e define-se o estimador:
 \[
-\hat{J}(A, B) = \frac{1}{k} \sum\limits_{i=1}^{k} \textbf{1}(h_{i,\min}(A) = h_{i,\min}(B))
+\hat{J}(A, B) = \frac{1}{k} \sum\limits_{i=1}^{k} \mathds{1}(h_{i,\min}(A) = h_{i,\min}(B))
 \]
 
 O algoritmo em si consiste em computar uma assinatura $H$ utilizando $k$ funções \emph{hash} para cada conjunto. Esta assinatura será comparada, valor a valor, para estimar a semelhança entre os conjuntos.
@@ -191,7 +188,7 @@ Por exemplo, a Figura~\ref{fig:min:prob} mostra o gráfico de erro padrão por f
 
 Muitas vezes, o custo de computar várias funções \emph{hash} pode ser muito alto na prática, especialmente para conjuntos com centenas de milhões de elementos.
 
-Uma variante possível do \emph{MinHash} é utilizar apenas uma função \emph{hash} e manter os $k$ menores resultados em ordem ascendente de $h(x)$ para cada conjunto como assinatura (Algoritmo~\ref{alg:min:hashcompute2}). Denota-se por $h_{(k)}(S)$ o conjunto com $k$ menores hashes do conjunto $S$. 
+Uma variante possível do \emph{MinHash} é utilizar apenas uma função \emph{hash} e manter os $k$ menores resultados em ordem ascendente de $h(x)$ para cada conjunto como assinatura (Algoritmo~\ref{alg:min:hashcompute2}). Denota-se por $h_{(k)}(S)$ o conjunto com $k$ menores hashes do conjunto $S$ e $H_{\max}$ o valor máximo em $H$. 
 
 \begin{algorithm}
 \linespread{1}\selectfont
@@ -226,15 +223,28 @@ A similaridade entre os conjuntos será computada de uma forma diferente da vari
 \end{algorithmic}
 \end{algorithm}
 
-Apesar da diferença prática, a ideia é similar à da variante com múltiplas funções \emph{hash}. Entretanto, nesta variante é preciso considerar que, em vez de obter apenas o primeiro elemento de cada permutação da matriz característica, obtém-se $k$ elementos. Mesmo assim, também é possível usar o limite de Chernoff para estimar o erro, pois o mesmo resultado para amostragem com substituição pode ser usado para amostragem sem substituição, como mostra Hoeffdin. \cite{hoeffding1963probability,bardenet2015concentration}.
+Apesar da diferença prática, a ideia é similar à da variante com múltiplas funções \emph{hash}. Entretanto, nesta variante é preciso considerar que, em vez de obter apenas o primeiro elemento de cada permutação da matriz característica, obtém-se $k$ elementos. Mesmo assim, também é possível usar o limite de Chernoff para estimar o erro, pois o mesmo resultado para amostragem com substituição pode ser usado para amostragem sem substituição, como mostra Hoeffdin \cite{hoeffding1963probability,bardenet2015concentration}.
+
+\subsection{Exemplo}\label{sec:minhash:example}
+
+Com o objetivo de facilitar o entendimento da estrutura \emph{MinHash}, apresentamos aqui um exemplo prático de seu uso. Consideraremos aqui o cálculo da assinatura \emph{MinHash} de dois conjuntos $A$ e $B$, ambos contendo seis strings. Tal assinatura será computada através da variante com múltiplas funções \emph{hash}. São definidas $k=8$ funções \emph{hash} de 8 bits (por simplicidade). A figura \ref{fig:minhash_example} mostra as tabelas que dão origem às assinaturas dos conjuntos.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[scale=0.6]{figures/minhash_example.pdf}
+  \caption{Exemplos de construção de assinatura \emph{MinHash}}
+  \label{fig:minhash_example}
+\end{figure}
+
+Cada linha de cada tabela corresponde a uma string, bem como os resultados da aplicação de cada função $h_1, \ldots, h_8$, no intervalo $[0; 255]$ (pois a função escolhida retorna valores de 8 bits). O rodapé da tabela mostra os valores mínimos para cada função. Esses valores compõem a assinatura de cada conjunto. A estimativa do índice de Jaccard se dá obtendo a proporção das posições nas assinaturas dos dois conjuntos que possuem o mesmo valor. No exemplo, metade dos valores são iguais entre as assinaturas (respectivos às funções $h_1$, $h_2$, $h_3$ e $h_6$). Considerando que no exemplo, de fato, $J(A, B) = 4/8 = 0,5$, podemos dizer que a estimativa foi precisa.
 
 \subsection{Detecção de quase-duplicatas}\label{sec:min:duplicate}
 
-A motivação inicial que levou à criação do algoritmo \emph{MinHash} era encontrar quase-duplicatas em uma coleção de 30 milhões de documentos indexados pelo motor de busca Alta Vista em 1997 \cite{broder1997resemblance}. Percebe-se que apenas considerando a técnica \emph{hash}ing, a solução ainda é bastante impraticável, pois uma busca par-a-par no conjunto de dados requer $\binom{30,000,000}{2}$ -- ou aprox. 450 trilhões -- operações. Mesmo sendo capaz de executar cada comparação em 1 microsegundo, ainda levaria mais de uma década para processar a coleção inteira.
+A motivação inicial que levou à criação do algoritmo \emph{MinHash} era encontrar quase-duplicatas em uma coleção de 30 milhões de documentos indexados pelo motor de busca Alta Vista em 1997 \cite{broder1997resemblance}. Percebe-se que apenas considerando a técnica \emph{hashing}, a solução ainda é bastante impraticável, pois uma busca par-a-par no conjunto de dados requer $\binom{30,000,000}{2}$ -- ou aprox. 450 trilhões -- operações. Mesmo sendo capaz de executar cada comparação em 1 microsegundo, ainda levaria mais de uma década para processar a coleção inteira.
 
 É importante notar, entretanto, que se o objetivo é encontrar grupos de similaridade, não é necessário computar o índice para todos os pares de conjuntos. É suficiente focar nos pares que possuem maior probabilidade de serem similares.
 
-É possível utilizar a teoria \emph{hash}es sensíveis a localidade para diminuir a quantidade de pares a serem verificados. Uma técnica aplicável neste cenário é dividir as funções \emph{hash} em bandas e separar as assinaturas em baldes baseados no valor da assinatura em cada banda isoladamente. Assinaturas similares terão uma tendência maior de serem colocadas no mesmo balde (i.e. terem valores idênticos de assinatura naquela banda), com uma probabilidade definida.
+É possível utilizar a teoria \emph{hashes} sensíveis a localidade para diminuir a quantidade de pares a serem verificados. Uma técnica aplicável neste cenário é dividir as funções \emph{hash} em bandas e separar as assinaturas em baldes baseados no valor da assinatura em cada banda isoladamente. Assinaturas similares terão uma tendência maior de serem colocadas no mesmo balde (por terem valores idênticos de assinatura naquela banda), com uma probabilidade definida.
 
 Para entender a técnica, considere múltiplos conjuntos e a matriz formada por suas assinaturas \emph{MinHash}, utilizando a variante com múltiplas funções \emph{hash}. Cada coluna representa um conjunto e cada linha representa uma função \emph{hash}. O objetivo é separar as linhas em bandas e, para cada banda, verificar os grupos de assinaturas formados como candidatos a duplicatas. 
 
@@ -263,7 +273,7 @@ Por exemplo, na Figura~\ref{fig:minhash_signaturematrix} ilustra-se uma matriz d
 
 No exemplo, a banda 2 revela um potencial par de quase-duplicatas, pois $S_2$ e $S_5$ possuem o mesmo valor para suas assinaturas naquela banda.
 
-Considerando que deseja-se encontrar pares com similaridade acima de um certo limite, esta técnica está sujeita tanto a falsos positivos quantos falsos negativos. A probabilidade de um par de conjuntos $A$ e $B$, com $J(A, B) = s$, ser marcado como potencial duplicata, numa matriz com $b$ bandas com $r$ linhas por banda é exatamente a probabilidade dos dois conjuntos concordarem em todas as linhas de pelo menos uma banda, ou seja, $1 - (1 - s^r)^b$  \cite{rajaraman2012mining}.
+Considerando que deseja-se encontrar pares com similaridade acima de um certo limite, esta técnica está sujeita tanto a falsos positivos quantos falsos negativos. A probabilidade de um par de conjuntos $A$ e $B$, com $J(A, B) = s$, ser marcado como potencial duplicata, numa matriz com $b$ bandas com $r$ linhas por banda é exatamente a probabilidade dos dois conjuntos concordarem em todas as linhas de pelo menos uma banda, que é de $1 - (1 - s^r)^b$  \cite{rajaraman2012mining}.
 
 Baseado nesta probabilidade, a Figura~\ref{fig:min:lshprob} mostra, em função da similaridade, a probabilidade de um par de documentos ser marcado como duplicado em uma matriz com 64 funções \emph{hash} e algumas escolhas de $b$ diferentes.
 
@@ -301,13 +311,13 @@ A partir de $b$ e $r$ e uma probabilidade $p$ é possível derivar a partir de q
 s = \left(1 - (1-p)^{1/b}\right)^{1/r}
 \]
 
-Por exemplo, $b=32$, $r=16$, temos 0.5\% de chance de encontrar um par de conjuntos com similaridade acima de $0.5683$, e 95\% de chance de encontrar pares com similaridade acima de $0.8891$. Ao manipular estes valores é possível dimensionar facilmente a tolerância a falsos positivos ou falsos negativos no algoritmo.
+Por exemplo, $b=32$, $r=16$, temos 0,5\% de chance de encontrar um par de conjuntos com similaridade acima de $0,5683$, e 95\% de chance de encontrar pares com similaridade acima de $0,8891$. Ao manipular estes valores é possível dimensionar facilmente a tolerância a falsos positivos ou falsos negativos no algoritmo.
 
 \subsection{\emph{SimHash}}
 
-A partir do trabalho de Indyk e Motwani \cite{indyk1998approximate,gionis1999similarity}, começou-se a formalizar as bases teóricas das técnicas \emph{hash}ing sensível a localidade. De fato, \emph{MinHash} é apenas um tipo destes hashes. Muitos outros tipos foram estudados desde então. Uma dos mais bem sucedidos é o \emph{SimHash} \cite{charikar2002similarity}. Este algoritmo ganhou notoriedade nos últimos anos por compor um dos fatores usados pelo Google para priorizar a indexação de páginas na Internet \cite{manku2007detecting}.
+A partir do trabalho de Indyk e Motwani \cite{indyk1998approximate,gionis1999similarity}, começou-se a formalizar as bases teóricas das técnicas \emph{hashing} sensível a localidade. De fato, \emph{MinHash} é apenas um tipo destes hashes. Muitos outros tipos foram estudados desde então. Uma dos mais bem sucedidos é o \emph{SimHash} \cite{charikar2002similarity}. Este algoritmo ganhou notoriedade nos últimos anos por compor um dos fatores usados pelo Google para priorizar a indexação de páginas na Internet \cite{manku2007detecting}.
 
-Um hash sensível a localidade é definido por uma família de funções \emph{hash} $\mathcal{F}$, tal que para dois objetos $x, y \in U$, e uma certa função de similaridade $sim: U \times U \to {\rm I\!R}$, vale
+Um hash sensível a localidade é definido por uma família de funções \emph{hash} $\mathcal{F}$, tal que para dois elementos $x, y \in U$, e uma certa função de similaridade $sim: U \times U \to [0, 1]$, vale
 \[
     \Pr_{h \in \mathcal{F}}[h(x) = h(y)] = sim(x, y)
 \]
@@ -321,7 +331,7 @@ No caso das assinaturas de Charikar -- ou \emph{SimHash} -- o objetivo é estima
     \end{cases}
 \]
 
-Goemans e Williamson \cite{goemans1995improved} mostram que esta função respeita a definição suficiente para ser utilizada como um hash sensível a localidade, tal que, para vetores $\vec{u}$ e $\vec{v}$ 
+Goemans e Williamson \cite{goemans1995improved} mostram que esta função pode ser utilizada como um hash sensível a localidade, tal que, para vetores $\vec{u}$ e $\vec{v}$,
 \[
     \Pr[h_{\vec{r}}(\vec{u}) = h_{\vec{r}}(\vec{v})] = 1 - \frac{\theta(\vec{u}, \vec{v})}{\pi}\text{, }
 \] 
@@ -338,17 +348,13 @@ uma possível definição dos vetores relativos a $A$ e $B$ seria:
     v_B = (0, 1, 1, 1, 1)
 \]
 
-Como o menor ângulo formado por estes dois vetores é 1.15026rad, então a similaridade entre os dois, segundo esta métrica, é igual a aproximadamente 0.695913.
-
-Para conjuntos, esta função \emph{hash} representa a seguinte métrica de similaridade:
+Como o menor ângulo formado por estes dois vetores é 1,15026rad, então a similaridade entre os dois, segundo esta métrica, é igual a aproximadamente 0.695913. Para conjuntos, esta função \emph{hash} (tal associação de vetores a elementos) representa a seguinte métrica de similaridade:
 
 \[
     \Pr[h_{\vec{r}}(\vec{u}_A) = h_{\vec{r}}(\vec{u}_B)] = 1 - \frac{\arccos \left( \frac{|A \cap B|}{\sqrt{|A| \cdot |B|}}\right)}{\pi}\text{.}
 \]
 
-Assim como no algoritmo \emph{MinHash}, porém mais claramente perceptível neste caso, uma função \emph{hash} perfeita iria requerer a representação do vetor $\vec{r}$ em $O(d)$ bits, o que em casos de alta dimensionalidade pode ser impraticável. Mas igualmente neste caso, mesmo famílias simples \emph{hash}es de Rabin são suficientes para uma boa aproximação \cite{charikar2002similarity}.
-
-Na prática, o algoritmo consiste em computar $k$ bits \emph{hash} para cada elemento do conjunto, acumulando o sinal dos resultados em um vetor $V[1..k]$. O resultado é um outro vetor de $k$ bits, onde cada um assume o valor 0 se o respectivo valor no vetor acumulado for negativo e 1 se for não-negativo (Algoritmo~\ref{alg:min:simhashcompute}).
+Na prática, o algoritmo consiste em computar $k$ bits, armazenados em um vector $V[1..k]$, onde o elemento $V[i]$ assume valor $0$ se, usando-se a $i$-ésima função \emph{hash}, houver menos elementos no conjunto com valor \emph{hash} negativo do que não-negativo, ou assume valor $1$ caso contrário (Algoritmo~\ref{alg:min:simhashcompute}).
 
 \begin{algorithm}
 \linespread{1}\selectfont
@@ -372,7 +378,7 @@ Na prática, o algoritmo consiste em computar $k$ bits \emph{hash} para cada ele
 \end{algorithmic}
 \end{algorithm}
 
-A comparação entre assinaturas consiste em contar o número de bits iguais em duas assinaturas (Algoritmo~\ref{alg:min:simhashcompare}).
+A comparação entre duas assinaturas consiste em determinar a proporção de bits iguais nas assinaturas (Algoritmo~\ref{alg:min:simhashcompare}).
 
 \begin{algorithm}
 \linespread{1}\selectfont
@@ -451,7 +457,9 @@ A métrica de similaridade utilizada no teste foi o índice de Jaccard entre os 
 \scalebox{0.80}{\begin{tikzpicture}
 	\begin{semilogyaxis}[
 	    ybar,
-	    xmin=0, xmax=1
+	    xmin=0, xmax=1,
+        ylabel={quantidade},
+        xlabel={similaridade},
     ]
 
     \addplot +[
@@ -495,7 +503,7 @@ Para os dois testes, variou-se $k$ (o número de funções \emph{hash}) entre 25
 
     \addplot[line width=15pt,domain=0:1,samples=30,color={rgb:black,1;white,1},opacity=0.4]{2};
 
-    \addplot[name path=line3, line width=0pt,domain=1:1000,samples=40,opacity=0.0,forget plot]{p(x, 0.31731)*sqrt(2)/sqrt(pi)};
+    \addplot[name path=line3, line width=0pt,domain=1:1000,samples=40,opacity=0.0,forget plot]{p(x, 0.05)};
     \addplot[name path=line4, line width=15pt,domain=1:1000,samples=30,opacity=0.0, forget plot]{0};
 
 	\addplot[fill={rgb:black,1;white,1},fill opacity=0.40,forget plot] fill between[ of = line3 and line4];
@@ -526,7 +534,7 @@ Para os dois testes, variou-se $k$ (o número de funções \emph{hash}) entre 25
 
     \addplot[line width=15pt,domain=0:1,samples=30,color={rgb:black,1;white,1},opacity=0.4]{2};
 
-    \addplot[name path=line3, line width=0pt,domain=1:1000,samples=40,opacity=0.0,forget plot]{p(\x, 0.31731)*sqrt(2)/sqrt(pi)};
+    \addplot[name path=line3, line width=0pt,domain=1:1000,samples=40,opacity=0.0,forget plot]{p(\x, 0.05)};
     \addplot[name path=line4, line width=15pt,domain=1:1000,samples=30,opacity=0.0, forget plot]{0};
 	\addplot[fill={rgb:black,1;white,1},fill opacity=0.40,forget plot] fill between[ of = line3 and line4];
 
@@ -541,9 +549,9 @@ Para os dois testes, variou-se $k$ (o número de funções \emph{hash}) entre 25
 \label{fig:min:result}
 \end{figure}
 
-Também foi realizado o teste de clusterização dos pares de documentos utilizando a técnica descrita na Seção~\ref{sec:min:duplicate}. 
+Também foi testada a técnica de detecção de duplicatas descrita na Seção~\ref{sec:min:duplicate}. 
 
-Inicialmente calculou-se, para cada documento, assinaturas \emph{MinHash} com 512 funções \emph{hash}. Utilizou-se então a técnica de clusterização utilizando todas as possíveis combinações de número de bandas ($b$) e linhas por banda ($r$). 
+Inicialmente calculou-se, para cada documento, assinaturas \emph{MinHash} com 512 funções \emph{hash}. Utilizou-se então a técnica de detecção de duplicatas utilizando todas as possíveis combinações de número de bandas ($b$) e linhas por banda ($r$). 
 
 \begin{figure}[!htbp]
 \centering
@@ -578,7 +586,7 @@ Inicialmente calculou-se, para cada documento, assinaturas \emph{MinHash} com 51
 
 	\addplot[only marks, mark=*,opacity=1,black,mark options={scale=0.75}] table[x=b,y=v] {files/minhash_detect.txt};
     
-    \legend{$0.5\%<P<99.5\%$,$P\geq99.5\%$, pares encontrados };
+    \legend{{$0,5\%<P<99,5\%$},{$P\geq99,5\%$}, pares encontrados };
 
 
 	\end{axis}

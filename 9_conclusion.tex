@@ -1,7 +1,34 @@
 \chapter{Conclusão}\label{cap:conclusion}
 
-test
+Estruturas de dados probabilísticas e suas aplicações são um tema bastante popular na indústria atualmente, e embora sua origem remeta à década de 70, os resultados mais significativos foram desenvolvidos a partir dos anos 2000. Por este motivo, ainda há muita teoria a ser debatida sobre este assunto.
+
+É um tema com considerável aplicação prática (o que justifica tamanho interesse da indústria) e com um rico campo teórico a ser explorado, porém ainda carece de abordagem acadêmica mais criteriosa.
+
+Buscamos com este trabalho contribuir com uma aplicação inovadora de estruturas de dados probabilísticas ao problema da representação eficiente de grafos, obtendo resultados importantes, tanto na representação probabilística de grafos gerais quanto de classes específicas.
+
+\section{Contribuições}
+
+Ao longo do Capítulo~\ref{cap:probds}, resumimos a literatura disponível de quatro estruturas de dados probabilísticas importantes: filtro de Bloom, \emph{Count-Min sketch}, \emph{MinHash} e \emph{HyperLogLog}. Para cada uma delas, apresentamos a definição, as variantes, o cálculo teórico do erro associado, bem como suas aplicações práticas e resultados experimentais inéditos. Em especial, na Seção~\ref{sec:hll:intersection}, introduzimos uma nova técnica para estimar a cardinalidade da interseção entre conjuntos usando \emph{MinHash} e \emph{HyperLogLog}, com erro relativo apenas ao tamanho da interseção.
+
+Além disso, é introduzida no Capítulo~\ref{cap:graphs} uma nova aplicação para essas estruturas no problema da representação de grafos. Definimos o conceito de \emph{representação implícita probabilística}. Sob esta definição, são desenvolvidas duas representações implícitas probabilísticas. Uma, baseada em filtros de Bloom, é capaz de representar grafos gerais com mesma complexidade da matriz de adjacência no pior caso, sendo ainda mais eficiente para representar grafos esparsos. A outra, baseada em \emph{MinHash}, representa árvores com complexidade inferior à de uma representação implícita, porém possui um fator constante muito grande para ser usada na prática. Demonstramos também que, se existir representação implícita probabilística com complexidade $O(n \log n)$ para grafos bipartidos, co-bipartidos ou split, é possível estendê-la para todas as classes de grafos com a mesma complexidade.
+
+Ao longo da produção deste trabalho, publicamos alguns resultados parciais em congressos. Citamos:
+\begin{itemize}
+  \item Resumo \emph{Estruturas de Dados Probabilísticas para Representação de Conjuntos}, aceito no \emph{I Encontro de Teoria da Computação} e publicado em \emph{Anais do CSBC 2016}.
+  
+  \item Resumo \emph{Estimativa de Cardinalidade da Interseção de Conjuntos Utilizando as Estruturas MinHash e HyperLogLog}, aceito no \emph{XXXVI Congresso Nacional de Matemática Aplicada e Computacional} e publicado em \emph{Anais da SBMAC 2016}.
+\end{itemize}
 
 \section{Trabalhos futuros}
 
-test
+Neste trabalho, introduzimos a definição de \emph{representações implícitas probabilísticas}. Sobre este tema, alguns problemas em aberto podem suscitar futuras pesquisas. Podemos citar:
+
+\begin{itemize}
+  \item provar a existência ou não de representação implícita probabilística para grafos bipartidos (na versão estrita do problema) com quaisquer valores constantes de $\delta_A$ e $\delta_B$ ($\delta_A < \delta_B$);
+  
+  \item buscar novas representações baseadas em \emph{MinHash} para outras classes de grafos além de árvores;
+
+  \item estudar outras aplicações práticas onde a otimização alcançada pelo uso de filtros de Bloom possa ser útil;
+  
+  \item determinar a viabilidade da versão relaxada de representação implícita probabilística para grafos bipartidos, co-bipartidos ou split, que implica na viabilidade para grafos gerais.
+\end{itemize}
