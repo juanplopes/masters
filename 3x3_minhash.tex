@@ -184,6 +184,8 @@ Por exemplo, a Figura~\ref{fig:min:prob} mostra o gráfico de erro padrão por f
 \label{fig:min:prob}
 \end{figure}
 
+É razoável argumentar que para representar conjuntos arbitrários de cardinalidade $n$, seria necessário usar funções \emph{hash} de $O(\log n)$ bits. Entretanto, em \cite{b-bit-minwise-hashing}, Li e König argumentam que para qualquer esquema de \emph{hash} sensível a localidade (como \emph{MinHash}), guardar apenas um número constante dos bits menos significativos dos \emph{hashes} calculados não aumenta consideravelmente a variância dos estimadores para valores de similaridade próximos a 0,5.
+
 \subsection{Variante com apenas uma função \emph{hash}}
 
 Muitas vezes, o custo de computar várias funções \emph{hash} pode ser muito alto na prática, especialmente para conjuntos com centenas de milhões de elementos.
@@ -212,7 +214,7 @@ A similaridade entre os conjuntos será computada de uma forma diferente da vari
 
 \begin{algorithm}
 \linespread{1}\selectfont
-\caption{Estimador de $J(A. B)$, sendo $H_1$ e $H_2$ as assinaturas, respectivamente, de $A$ e $B$}
+\caption{Estima $J(A. B)$, sendo $H_1$ e $H_2$ as assinaturas, respectivamente, de $A$ e $B$}
 \label{alg:min:hashcompare2}
 \begin{algorithmic}[1]
 \Function{Comparar-Assinaturas}{$H_1, H_2$}
@@ -227,7 +229,7 @@ Apesar da diferença prática, a ideia é similar à da variante com múltiplas 
 
 \subsection{Exemplo}\label{sec:minhash:example}
 
-Com o objetivo de facilitar o entendimento da estrutura \emph{MinHash}, apresentamos aqui um exemplo prático de seu uso. Consideraremos aqui o cálculo da assinatura \emph{MinHash} de dois conjuntos $A$ e $B$, ambos contendo seis strings. Tal assinatura será computada através da variante com múltiplas funções \emph{hash}. São definidas $k=8$ funções \emph{hash} de 8 bits (por simplicidade). A figura \ref{fig:minhash_example} mostra as tabelas que dão origem às assinaturas dos conjuntos.
+Com o objetivo de facilitar o entendimento da estrutura \emph{MinHash}, apresentamos aqui um exemplo prático de seu uso. Consideraremos aqui o cálculo da assinatura \emph{MinHash} de dois conjuntos $A$ e $B$, ambos contendo seis strings. Tal assinatura será computada através da variante com múltiplas funções \emph{hash}. São definidas $k=8$ funções \emph{hash} de 8 bits (por simplicidade). A Figura \ref{fig:minhash_example} mostra as tabelas que dão origem às assinaturas dos conjuntos.
 
 \begin{figure}[!htbp]
   \centering
@@ -348,7 +350,7 @@ uma possível definição dos vetores relativos a $A$ e $B$ seria:
     v_B = (0, 1, 1, 1, 1)
 \]
 
-Como o menor ângulo formado por estes dois vetores é 1,15026rad, então a similaridade entre os dois, segundo esta métrica, é igual a aproximadamente 0.695913. Para conjuntos, esta função \emph{hash} (tal associação de vetores a elementos) representa a seguinte métrica de similaridade:
+Como o menor ângulo formado por estes dois vetores é 1,15026 rad, então a similaridade entre os dois, segundo esta métrica, é igual a aproximadamente 0.695913. Para conjuntos, esta função \emph{hash} (tal associação de vetores a elementos) representa a seguinte métrica de similaridade:
 
 \[
     \Pr[h_{\vec{r}}(\vec{u}_A) = h_{\vec{r}}(\vec{u}_B)] = 1 - \frac{\arccos \left( \frac{|A \cap B|}{\sqrt{|A| \cdot |B|}}\right)}{\pi}\text{.}

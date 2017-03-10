@@ -2,7 +2,7 @@
 \section{\emph{Count-Min Sketch}}\label{sec:countmin}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-\emph{Count-Min Sketch} é uma estrutura probabilística, descrita por Cormode e Muthukrishnan \cite{cormode2005improved}, que permite representar um vetor implícitamente e estimar consultas sobre ele. Esta estrutura mostra-se importante em casos onde o vetor representado não caberia em memória, sendo aceitáveis resultados probabilísticos para consultas específicas. Em especial, \emph{Count-Min Sketch} e suas variantes permitem estimar o valor em índices e intervalos específicos do vetor, bem como o produto escalar entre diferentes vetores. Estas operações ajudam a resolver muitos problemas relacionados à análise de fluxos de dados. Em especial, ao representar os elementos de um multiconjunto de inteiros como os índices do vetor $A$, e suas frequências como os valores, é possível utilizar a consulta de intervalo para estimar os percentis do multiconjunto original.
+\emph{Count-Min Sketch} é uma estrutura probabilística, descrita por Cormode e Muthukrishnan \cite{cormode2005improved}, que permite representar um vetor implicitamente e estimar consultas sobre ele. Esta estrutura mostra-se importante em casos onde o vetor representado não caberia em memória, sendo aceitáveis resultados probabilísticos para consultas específicas. Em especial, \emph{Count-Min Sketch} e suas variantes permitem estimar o valor em índices e intervalos específicos do vetor, bem como o produto escalar entre diferentes vetores. Estas operações ajudam a resolver muitos problemas relacionados à análise de fluxos de dados. Em especial, ao representar os elementos de um multiconjunto de inteiros como os índices do vetor $A$, e suas frequências como os valores, é possível utilizar a consulta de intervalo para estimar os percentis do multiconjunto original.
 
 \subsection{Definição}
 
@@ -335,11 +335,11 @@ No primeiro teste, todas as palavras em todas as obras foram inseridas em \emph{
 
     	\end{axis}
     \end{tikzpicture}}
-\caption{Distribuição de similaridades entre pares de documentos}
+\caption{Erro observado por número de linhas da matriz para frequência}
 \label{fig:countmin_result}
 \end{figure}
 
-O segundo teste agrupo os textos por obra, em um total de 42 obras. Para cada obra, foi feita uma cópia deste conjunto com uma certa porcentagem aleatória de palavras substituídas por strings aleatórias. 84 conjuntos de palavras foram utilizados no total.
+O segundo teste agrupou os textos por obra, em um total de 42 obras. Para cada obra, foi feita uma cópia deste conjunto com uma certa porcentagem aleatória de palavras substituídas por strings aleatórias. 84 conjuntos de palavras foram utilizados no total.
 
 Para cada conjunto de palavras foram computados \emph{Count-Min sketches} do vetor de frequências com $m$ variando entre 128 e 4096. Para cada par de conjuntos, foi estimado o produto escalar e seu erro (relativo a $\lVert A \rVert_1 \cdot \lVert B \rVert_1$). O resultado (média e percentil 99) pode ser observado na Figura~\ref{fig:countmin_product_result}.
 
@@ -376,7 +376,7 @@ Para cada conjunto de palavras foram computados \emph{Count-Min sketches} do vet
 
     	\end{axis}
     \end{tikzpicture}}
-\caption{Distribuição de similaridades entre pares de documentos}
+\caption{Erro observado por número de linhas da matriz para produto escalar}
 \label{fig:countmin_product_result}
 \end{figure}
 

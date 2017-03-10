@@ -1,7 +1,9 @@
+%\documentclass[a4paper,12pt,oneside,onecolumn]{uerj/uerj}
 \documentclass[titlepage,a4paper,oneside,onecolumn,12pt]{report}
 
 \usepackage[top=3cm, bottom=2cm, left=3cm, right=2cm]{geometry}
 
+%\usepackage[alf]{abntex/abntex2cite}
 \usepackage[utf8]{inputenc}
 \usepackage{pgfplotstable}
 \usepackage{pgfplots}
@@ -23,6 +25,8 @@
 %\setstretch{1.5}
 
 \input{uerj/algptbr.tex}
+\usepackage[frame=no,gride=no,algline=yes,font=default]{uerj/uerjformat}
+
 
 \setlength{\headheight}{15.1pt} 
 
@@ -47,24 +51,93 @@
 \newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
 \newcolumntype{N}{@{}m{0pt}@{}}
 
-\title{Estruturas de Dados Probabilísticas Aplicadas à Representação Implícita de Grafos}
-\author{Juan Lopes}
+\logo{uerj/logo_uerj_cinza.png}
+\marcadagua{uerj/marcadagua_uerj_cinza.png}{1}{160}{255}
+
+\instituicao{Universidade do Estado do Rio de Janeiro}
+            {Centro de Tecnologia e Ciências}
+            {Instituto de Matemática e Estatística}
+            {Programa de Pós-Graduação em Ciências Computacionais}
+
+\autor{Juan Pedro Alves}{Lopes}
+\titulo{Estruturas de Dados Probabilísticas Aplicadas à Representação Implícita de Grafos}
+
+\tituloshow{Estruturas de Dados Probabilísticas Aplicadas à Representação \\ Implícita de Grafos}
+
+\orientador{Prof. Dr.} % rotulo
+           {Paulo Eustáquio Duarte}{Pinto} % {nome}{sobrenome}
+           {Instituto de Matemática e Estatística - UERJ} % afiliacao
+
+\coorientador{Prof. Dr.} % rotulo
+           {Fabiano de Souza}{Oliveira} % {nome}{sobrenome}
+           {Instituto de Matemática e Estatística - UERJJ} % afiliacao
 
 
-%\includeonly{01_intro}
-%includeonly{1_intro,2_concepts}
+\grau{Mestre}
+\curso{Ciências Computacionais}
+
+\local{Rio de Janeiro}   % cidade
+\data{10}{Março}{2017} % {dia}{mes}{ano}
+
+%\includeonly{1_intro}
+%\includeonly{1_intro,2_concepts}
 %\includeonly{3_probds}
-\includeonly{4_graphs}
+%\includeonly{4_graphs}
 %\includeonly{9_conclusion}
+
 
 \begin{document}
 
-\maketitle
+%\frontmatter
+\capa
+\folhaderosto
 
-\linespread{1}\selectfont
+%\includepdf{ficha_catalografica.pdf}
+
+\begin{folhadeaprovacao}
+  \assinatura{Prof. Dr. Jayme Luiz Szwarcfiter\\ Universidade Federal do Rio de Janeiro}
+  \assinatura{Prof. Dr. Valmir Carneiro Barbosa\\ Universidade Federal do Rio de Janeiro}
+  \assinatura{Prof. Dr. Igor Machado Coelho\\ Instituto de Matemática e Estatística - UERJ}
+\end{folhadeaprovacao}
+
+\chapter*{Dedicatória}
+  \vfill\vfill
+    \hfill À minha esposa, Jacqueline,
+    
+    \hfill e ao meu filho, Miguel.
+  \vfill
+
+
+% ----------------------------------------------------------
+% RESUMO
+% ----------------------------------------------------------
+
+\chapter*{Resumo}
+
+\refbibliografica
+
+Esta dissertação apresenta duas principais contribuições. É feito um resumo da literatura sobre quatro estruturas de dados probabilísticas importantes: \emph{Bloom filters}, \emph{Count-Min sketch}, \emph{MinHash} e \emph{HyperLogLog}. São discutidas suas definições, variantes, limites de erro e aplicações práticas. Novos dados experimentais sobre essas estruturas foram produzidos para este trabalho. Além disso, é discutida aqui a aplicação de estruturas de dados probabilísticas para o problema de representação de grafos. Duas novas representações probabilísticas são introduzidas aqui: uma que usa filtros de Bloom e pode representar grafos gerais com a mesma complexidade da matriz de adjacência (sendo até melhor para grafos esparsos), e outra que usa \emph{MinHash} e pode representar árvores com complexidade menor que a representação ótima.
+
+\vspace{1em}
+\noindent {Palavras-chave}: Estruturas de dados probabilísticas, grafos, representação de grafos.
+
+% ----------------------------------------------------------
+% Abstract
+% ----------------------------------------------------------
+
+\chapter*{Abstract}
+
+This thesis comprises two major contributions. It summarizes the literature about four important probabilistic data structures: \emph{Bloom filters}, \emph{Count-Min sketch}, \emph{MinHash}, and \emph{HyperLogLog}, discussing their definition, variants, error bounds, and practical applications, while providing new experimental data about them. Also, it discusses the application of probabilistic data structures to the graph representation problem. Two new probabilistic representations are introduced here: one that uses Bloom filters and can represent general graphs with the same complexity as the adjacency matrix (but outperforms it for sparse graphs), the other that uses MinHash and can represent trees with lower complexity than the optimal implicit representation.
+
+\vspace{1em}
+\noindent {Keywords}: Probabilistic data structures, graphs, graph representation.
+
 \tableofcontents
 
-\linespread{1.5}\selectfont
+\listadefiguras
+\listofalgorithms
+
+\onehalfspacing
 \include{1_intro}
 \include{2_concepts}
 \include{3_probds}
@@ -76,7 +149,7 @@
 
 \addcontentsline{toc}{chapter}{Referências Bibiográficas}
 
-\setstretch{1}
+\singlespacing
 \bibliographystyle{alpha}
 \bibliography{main}
 

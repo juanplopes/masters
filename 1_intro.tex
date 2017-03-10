@@ -2,7 +2,7 @@
 \chapter{Introdução}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-O rápido aumento da capacidade computacional nas últimas décadas impulsionou a criação de novos sistemas que consomem imensos volumes de dados em um fluxo contínuo. Exemplos destes sistemas incluem aplicações financeiras, sistemas de telemetria de equipamentos e servidores, redes de sensores em plantas de produção, navios ou plataformas de petróleo, análise de transações em aplicações web, dentre muitas outras..
+O rápido aumento da capacidade computacional nas últimas décadas impulsionou a criação de novos sistemas que consomem imensos volumes de dados em um fluxo contínuo. Exemplos destes sistemas incluem aplicações financeiras, sistemas de telemetria de equipamentos e servidores, redes de sensores em plantas de produção, navios ou plataformas de petróleo, análise de transações em aplicações web, dentre muitas outras.
 
 Nestes sistemas, muitas vezes não é viável carregar todos os dados em um SGBD relacional para posteriormente efetuar as consultas necessárias. Normalmente a latência obtida nesta abordagem não é suficiente para o tipo de respostas que se deseja obter. As consultas precisam ser executadas continuamente sobre os dados que chegam. Historicamente, os SGBDs não permitem a execução de este tipo de consultas \cite{terry1992continuous}. Consultas contínuas diferem de consultas tradicionais por manterem um certo estado em memória e emitirem potencialmente mais de um resultado, sempre que alguma condição para tal for atingida. Alguns exemplos de tipos de consultas incluem:
 
@@ -18,7 +18,7 @@ Como os fluxos de dados podem ser virtualmente infinitos, a quantidade de memór
 
 Alguns problemas podem ter algoritmos trivialmente adaptados para funcionar neste modelo de processamento, como o cálculo da média. Outros, entretanto, podem não ser tão adequados. Um exemplo é o problema de calcular a mediana (ou qualquer quantil) em um fluxo de números inteiros, pois o mesmo requer mais de uma passagem pelos dados ou que eles sejam armazenados para computar o resultado. Em \cite{munro1980selection} mostra-se que calcular quantis em uma série com N valores em $p$ passagens pelos dados requer $\Omega(N^{\frac{1}{p}})$ espaço.
 
-Neste trabalho, abordaremos estruturas de dados conhecidas como estruturas de sinopse (\emph{synopsis}) ou esboço (\emph{sketch}) \cite{gibbons1999synopsis}. Neste trabalho iremos nos referir a elas apenas como estruturas de dados probabilísticas. A principal característica destas é utilizar uma quantidade limitada de recursos. Em especial:
+Neste trabalho, abordaremos estruturas de dados conhecidas como estruturas de sinopse (\emph{synopsis}) ou esboço (\emph{sketch}) \cite{gibbons1999synopsis}. Iremos nos referir a elas apenas como estruturas de dados probabilísticas. A principal característica destas é utilizar uma quantidade limitada de recursos. Em especial:
 
 \begin{itemize}
   \item podem residir na memória principal, evitando operações de E/S;
@@ -28,7 +28,7 @@ Neste trabalho, abordaremos estruturas de dados conhecidas como estruturas de si
   \item servem como substitutos de baixo custo dos dados originais, viabilizando alguns tipos de consultas.
 \end{itemize}
 
-Frequentemente, estruturas de dados probabilísticas descartam informações demais para representar fielmente os dados originais e permitir uma resposta exata às consultas. Estas estruturas de dados aproximam a resposta com um fator de erro relativo à quantidade de recursos destinados ao processamento.
+Frequentemente, estruturas de dados probabilísticas descartam algumas das informações que seriam necessárias para representar fielmente os dados originais e permitir uma resposta exata às consultas. Estas estruturas de dados aproximam a resposta com um fator de erro relativo à quantidade de recursos destinados ao processamento.
 
 Em especial, este trabalho foca nas estruturas que se aproveitam da codificação em \emph{hash} dos elementos de um conjunto ou multiconjunto para responder consultas específicas.
 

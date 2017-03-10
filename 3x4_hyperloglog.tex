@@ -44,7 +44,7 @@ A função \emph{hash} utilizada no \emph{HyperLogLog} mapeia cada elemento do d
 \Pr(h(x) &= 0^{p-1}1...&) = 2^{-p} \\
 \end{alignat*}
 
-Ao observar-se que, sobre todos os \emph{hashes} de elementos do conjunto, o prefixo que possui maior número de 0's iniciando a cadeiaé da forma $0^{p-1}1$ num fluxo, então a cardinalidade com alta probabilidade é $2^p$. É importante notar como este conceito é análogo àquele de manter o menor valor \emph{hash} encontrado, do algoritmo \emph{MinCount}  \cite{giroire2009order}.
+Ao observar-se que, sobre todos os \emph{hashes} de elementos do conjunto, o prefixo que possui maior número de 0's iniciando a cadeia é da forma $0^{p-1}1$ num fluxo, então a cardinalidade com alta probabilidade é $2^p$. É importante notar como este conceito é análogo àquele de manter o menor valor \emph{hash} encontrado, do algoritmo \emph{MinCount}  \cite{giroire2009order}.
 
 O algoritmo consiste em particionar o conjunto aleatoriamente em $m = 2^b$ subconjuntos, usando os $b$ primeiros bits do \emph{hash} de cada elemento e armazenar, para cada subconjunto, o tamanho do maior prefixo $0^{p-1}1$ visto. Estes valores são armazenados em um vector $M$ de $m$ posições. Cada posição do vetor representa um estimador e pode assumir um valor entre $0$ e $\lceil \log n \rceil$.
 
@@ -63,7 +63,7 @@ O uso da média harmônica é o grande diferencial do \emph{HyperLogLog} em rela
 
 \begin{algorithm}
 \linespread{1}\selectfont
-\caption{\emph{HyperLogLog}: estima a cardinalidade do multiconjunto $S$}
+\caption{Estima a cardinalidade do multiconjunto $S$}
 \label{alg:hll:main}
 \begin{algorithmic}[1]
 \State seja $\rho(w)$ o índice do primeiro bit 1 na representação binária de $w$
@@ -173,9 +173,7 @@ As mudanças, embora simples, trazem considerável ganho em aplicações prátic
   \item[Correção empírica no viés para baixas cardinalidades] \hfill \\
     A versão \emph{prática} do algoritmo \emph{HyperLogLog} original sugeria utilizar \emph{Linear Counting} para baixas cardinalidades, para evitar um erro sistemático que ocorre na estimativa deste intervalo. 
     
-    Heule et al. mostram que este erro era causado por um simples viés que pode ser medido empiricamente e corrigido, melhorando consideravelmente a precisão do algoritmo. 
-
-    Além disso, demonstram empiricamente que ocorre uma anomalia no erro observado próximo à cardinalidade $\frac{5}{2}m$, definida no artigo original como ponto de transição entre a estimativa dada pelo \emph{Linear Counting} e o \emph{HyperLogLog} em si.
+    Heule et al. mostram que este erro era causado por um simples viés que pode ser medido empiricamente e corrigido, melhorando consideravelmente a precisão do algoritmo. Além disso, demonstram empiricamente que ocorre uma anomalia no erro observado próximo à cardinalidade $\frac{5}{2}m$, definida no artigo original como ponto de transição entre a estimativa dada pelo \emph{Linear Counting} e o \emph{HyperLogLog} em si.
     
     Na Seção~\ref{sec:hll:experiments}, mostramos os efeitos empíricos desta correção em comparação com o algoritmo original.
 
@@ -229,7 +227,7 @@ Como o erro de nenhum dos dois algoritmos depende do tamanho do conjunto, podemo
 
 \subsection{Aplicações}
 
-O algoritmo \emph{HyperLogLog} traz grandes vantagens tanto para aplicações em lote quanto em tempo real. Sua caracteristica altamente paralizável o torna extremamente importante para aplicações que lidam com grandes volumes de dados. Abaixo citamos algumas aplicações comuns.
+O algoritmo \emph{HyperLogLog} traz grandes vantagens tanto para aplicações em lote quanto em tempo real. Sua caracteristica altamente paralelizável o torna extremamente importante para aplicações que lidam com grandes volumes de dados. Abaixo citamos algumas aplicações comuns.
 
 \begin{description}
 
@@ -335,7 +333,7 @@ No segundo experimento, como o objetivo era testar a cardinalidade próxima ao p
     
 É possível observar a curva próxima ao ponto crítico, onde tanto o algoritmo \emph{Linear Counting} quanto o \emph{HyperLogLog} original levam a um erro acima do esperado. Também é possível observar como o \emph{HyperLogLog++} diminui este erro através da correção com fatores obtidos empiricamente.
 
-No terceiro experimento tinha como objetivo observar o erro da estimativa de cardinalidade entre a interseção de dois conjuntos. Para isso, usou-se o mesmo conjunto de dados utilizado no experimento com o \emph{MinHash} (seção~\ref{sec:min:experiments}): 84 conjuntos, sendo 42 deles versões com um número aleatório de palavras alteradas dos 42 conjuntos originais, totalizando 3486 pares de conjuntos. Para cada par, estimou-se a cardinalidade da interseção usando a técnica descrita na seção~\ref{sec:hll:intersection} e comparou-se com a cardinalidade real. 
+O terceiro experimento tinha como objetivo observar o erro da estimativa de cardinalidade entre a interseção de dois conjuntos. Para isso, usou-se o mesmo conjunto de dados utilizado no experimento com o \emph{MinHash} (Seção~\ref{sec:min:experiments}): 84 conjuntos, sendo 42 deles versões com um número aleatório de palavras alteradas dos 42 conjuntos originais, totalizando 3486 pares de conjuntos. Para cada par, estimou-se a cardinalidade da interseção usando a técnica descrita na Seção~\ref{sec:hll:intersection} e comparou-se com a cardinalidade real. 
 
 O \emph{MinHash} em todos os testes utilizava a técnica com apenas uma função \emph{hash} e $k = 2048$. O \emph{HyperLogLog} variava com $7 \leq b \leq 18$. O erro para cada estimativa foi registrado e, para cada valor de $b$, foi computada a média e o desvio padrão. O resultado pode ser visto na Figura~\ref{fig:hll:exp_minhash}.
 

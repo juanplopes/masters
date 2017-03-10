@@ -2,7 +2,7 @@
 \chapter{Conceitos Básicos}\label{cap:concepts}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A fim facilitar o entendimento das ideias exploradas nos próximos capítulos, introduzimos aqui os conceitos básicos utilizados ao longo deste trabalho.
+A fim de facilitar o entendimento das ideias exploradas nos próximos capítulos, introduzimos aqui os conceitos básicos utilizados ao longo deste trabalho.
 
 Em especial, abordaremos o básico de probabilidade, explicando desde o conceito de espaço amostral até variáveis aleatórias e estimadores; conceitos essenciais para explicar e demonstrar as propriedades de estruturas de dados probabilísticas. 
 
@@ -170,7 +170,7 @@ O \emph{viés} $\text{B}(\hat{\theta})$ de um estimador é a diferença entre se
 
 Todas as estruturas descritas neste trabalho são baseadas em funções \emph{hash} e são, de certa forma, dependentes das propriedades das funções utilizadas. Por isso, apresentamos aqui um breve resumo das características principais esperadas de funções aplicáveis a estruturas de dados probabilísticas.
 
-O objetivo principal das funções \emph{hash} neste contexto é a capacidade de simular certa aleatoriedade a um conjunto de dados que pode ser altamente estruturados. É impossível definir uma função que cria dados aleatórios a partir de dados não aleatórios \cite{knuth1998art}, mas na prática é possível criar uma imitação boa o suficiente.
+O objetivo principal das funções \emph{hash} neste contexto é a capacidade de simular certa aleatoriedade para um conjunto de dados que pode ser altamente estruturado. É impossível definir uma função que cria dados aleatórios a partir de dados não aleatórios \cite{knuth1998art}, mas na prática é possível criar uma imitação boa o suficiente.
 
 \subsection{Tabelas \emph{hash}}
 
@@ -196,9 +196,9 @@ Há outros detalhes teóricos e de implementação de tabelas \emph{hash} que n�
 
 \subsection{\emph{Hashes} criptográficos}\label{sec:hashcripto}
 
-Não há um conjunto ideal de propriedades de funções \emph{hash} que sirva a todos os propósitos possíveis. As propriedades ideais para uso em uma tabela \emph{hash} não são os mesmos para o uso em aplicações de segurança, por exemplo. Nestas aplicações, geralmente espera-se que satisfaça-se algumas propriedades adicionais, de forma a garantir que usuários maliciosos não possam explorar as propriedades da construção da função para obter dados não autorizados do sistema.
+Não há um conjunto ideal de propriedades de funções \emph{hash} que sirva a todos os propósitos possíveis. As propriedades ideais para uso em uma tabela \emph{hash} não são as mesmas para o uso em aplicações de segurança, por exemplo. Nestas aplicações, geralmente espera-se que satisfaça-se algumas propriedades adicionais, de forma a garantir que usuários maliciosos não possam explorar as propriedades da construção da função para obter dados não autorizados do sistema.
 
-Espera-se que uma função \emph{hash} criptográfica $h$ possua as seguintes propriedades \cite{katz2014introduction}:
+Espera-se que uma função \emph{hash} criptográfica $h$ possua as seguintes propriedades adicionais \cite{katz2014introduction}:
 
 
 \begin{itemize}
@@ -220,7 +220,7 @@ Funções \emph{hash} criptográficas possuem muitos usos na prática. Entre ele
 
   \item \textbf{Verificação de integridade de dados:} Ao aplicar uma função \emph{hash} ao conteúdo de um conjunto de dados, é possível construir uma assinatura que atesta com grande probabilidade a integridade desses dados. De posse desta assinatura e da função utilizada, é possível verificar se os dados sofreram alguma alteração apenas aplicando a função novamente sobre os dados e verificando se as assinaturas são iguais.
   
-  \item \textbf{Autenticação de mensagens:} Para autenticar mensagens, é necessário não apenas verificar sua integridade (como no exemplo anterior), mas também a autenticidade de quem criou a assinatura. Para isso utilizam-se $HMACs$ (Códigos Autenticadores de Mensagens Baseados em \emph{Hash}, em inglês), que consistem em funções \emph{hash} que possuem dois mecanismos diferentes para geração e verificação dos \emph{hashes}. A geração é secreta, e garante a autenticidade. A verificação é pública e permite que qualquer observador verifique a autenticidade de uma mensagem. Geralmente \emph{HMACs} são baseados em algoritmos criptografia assimétrica.
+  \item \textbf{Autenticação de mensagens:} Para autenticar mensagens, é necessário não apenas verificar sua integridade (como no exemplo anterior), mas também a autenticidade de quem criou a assinatura. Para isso utilizam-se $HMACs$ (Códigos Autenticadores de Mensagens Baseados em \emph{Hash}, em inglês), que consistem em funções \emph{hash} que possuem dois mecanismos diferentes para geração e verificação dos \emph{hashes}. A geração é secreta, e garante a autenticidade. A verificação é pública e permite que qualquer observador verifique a autenticidade de uma mensagem. Geralmente \emph{HMACs} são baseados em algoritmos de criptografia assimétrica.
   
   \item \textbf{Prova de esforço:} Alguns sistemas, como forma de controle de fluxo ou segurança contra ataques de negação de serviço, podem requisitar prova de que certo esforço computacional foi feito. Um exemplo notável é o algoritmo \emph{HashCash}, utilizado pelo protocolo de criptomoeda \emph{BitCoin}. O algoritmo consiste em quebrar parcialmente \emph{hashes}, isto é, encontrar mensagens cujo \emph{hash} comece com um certo número de zeros. O esforço computacional para encontrar esse \emph{hash} cresce exponencialmente com o número de zeros requerido. A verificação do resultado, por outro lado, pode ser feita com pouco esforço computacional.
   
@@ -366,7 +366,7 @@ Por sua razoável uniformidade, esta função é utilizada em todos os testes ex
 
 SHA-1 (\emph{Secure Hash Algorithm} 1) é uma função \emph{hash} criptográfica desenvolvida pela NSA e publicada pelo NIST \cite{fips2012180}, ambos órgãos do governo dos Estados Unidos da América, com o objetivo de se tornar o padrão de função criptográfica para assinaturas em certificados e outros fins de segurança.
 
-A função gera \emph{hashes} de 160 bits, geralmente representados como uma sequência hexadecimal de 40 caracteres, porém também é comum vê-los representados como \emph{strings} codificadas em \emph{base64}, com 28 caracteres. Por exemplo, ambas as \emph{strings} 
+A função gera \emph{hashes} de 160 bits, geralmente representados como uma sequência hexadecimal de 40 caracteres, porém também é comum vê-los representados como \emph{strings} codificadas em \emph{base64} (esquema de codificação que representa cada 24 bits usando quatro caracteres), com 28 caracteres. Por exemplo, ambas as \emph{strings} 
 \[
 \texttt{2fd4e1c67a2d28fced849ee1bb76e7391b93eb12} \text{ (em hexadecimal) e}
 \]

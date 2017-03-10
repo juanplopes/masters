@@ -165,9 +165,8 @@
   \renewcommand\figurename{Figura}
   \renewcommand\tablename{Tabela}
   \renewcommand\partname{}
-  \renewcommand\chaptername{}
   \renewcommand\appendixname{Ap\^endice}
-  \renewcommand\annexname{Anexo}
+  %\renewcommand\annexname{Anexo}
   \renewcommand\abstractname{Abstract}
 }
 
@@ -176,7 +175,7 @@
 \newcommand{\dedicatorianome}{Dedicat\'oria}
 \newcommand{\agradecimentosnome}{Agradecimentos}
 \newcommand{\orientadornome}{Orientador}
-\newcommand{\coorientadornome}{Coorientador}
+\newcommand{\coorientadornome}{Orientador}
 \newcommand{\resumonome}{Resumo}
 \newcommand{\glossarionome}{Gloss\'ario}
 
@@ -210,6 +209,8 @@
 }
 % ---
 
+
+
 % ---
 % Comandos de dados - total de paginas do documento
 % ---
@@ -224,6 +225,12 @@
   \title{#1}
   \renewcommand{\UERJtitulo}{#1}
 }
+
+\providecommand{\UERJtituloShow}{}
+\newcommand{\tituloshow}[1]{
+  \renewcommand{\UERJtituloShow}{#1}
+}
+
 % ---
 
 % ---
@@ -420,6 +427,7 @@
 % ------------------------------------------------------------------------
 
 \newcommand{\capa}{
+  \thispagestyle{empty}%
   \setcounter{page}{0}
   \begin{center}
     \parbox{2.5cm}{\includegraphics[width=2.5cm]{\UERJlogo}}
@@ -428,7 +436,7 @@
     \vfill
     {\large\UERJautor}\par
     \vfill\vfill\vfill
-    {\bfseries\huge\UERJtitulo}\par
+    {\bfseries\huge\UERJtituloShow\par}\par
     \vfill\vfill\vfill\vfill\vfill\vfill
     {\UERJlocal}\par
     {\UERJdata}
@@ -452,7 +460,7 @@
     } 
     {\large\UERJautor}\par
     \vfill\vfill
-    {\bfseries\huge\UERJtitulo}\par
+    {\bfseries\huge\UERJtituloShow\par}\par
     \vfill\vfill
     \vspace{.8cm}
     \hspace{.45\textwidth}
@@ -487,7 +495,7 @@
     } 
     {\large\UERJautor}\par
     \vfill\vfill\vfill
-    {\bfseries\huge\UERJtitulo}\par
+    {\bfseries\huge\UERJtituloShow\par}\par
     \vfill\vfill\vfill
     \vspace{.8cm}
     \hspace{.45\textwidth}
@@ -524,7 +532,7 @@
   \begin{center}
     {\large\UERJautor}\par
     \vfill\vfill
-    {\bfseries\huge\UERJtitulo}\par
+    {\bfseries\huge\UERJtituloShow\par}\par
     \vfill\vfill
     \hspace{.45\textwidth}
     \begin{minipage}{.5\textwidth}
@@ -702,61 +710,11 @@
   {\endgroup}
 
 \newcommand{\algorithmname}{Algoritmo}
-\newcommand{\listalgorithmname}{Lista de algoritmos}
+\renewcommand{\listalgorithmname}{Lista de algoritmos}
+\renewcommand{\thealgorithm}{\arabic{chapter}.\arabic{algorithm}}
+\@addtoreset{algorithm}{chapter}
 
-\newcounter{algorithm}
-\renewcommand \thealgorithm {\@arabic\c@algorithm}
-
-\def\fps@algorithm{htbp}
-\def\ftype@algorithm{3}
-\def\ext@algorithm{loa}
-\def\fnum@algorithm{\algorithmname\nobreakspace\thealgorithm}
-
-\newenvironment{algorithm}
-  {\let\@caption\@newalgcaption \@float{algorithm}}
-  {\end@float}
-
-\newenvironment{algorithm*}
-  {\addtocounter{algorithm}{-1}
-   \let\@caption\@newsalgcaption \@dblfloat{algorithm}}
-  {\end@dblfloat}
-
-\def\@newalgcaption#1[#2]#3 {
-  \par\phantomsection\addcontentsline{\csname ext@#1\endcsname}{#1}
-    {\protect\numberline{{\csname #1name\endcsname}\hfill\nobreak
-        {\csname the#1\endcsname}\space-\space}\ignorespaces#3}%
-  \begingroup
-    \@parboxrestore
-    \if@minipage \@setminipage \fi
-    \normalsize
-    \@makecaption{\csname fnum@#1\endcsname}{\ignorespaces #3}\par%
-  \endgroup
-}
-
-\def\@newsalgcaption#1[#2]#3 {
-  \par
-  \begingroup
-    \@parboxrestore
-    \if@minipage \@setminipage \fi
-    \normalsize
-    \@makecaption{\csname fnum@#1\endcsname}{\ignorespaces #3}\par%
-  \endgroup
-}
-
-\newcommand*\l@algorithm{\@dottedtocline{0}{0em}{6.5em}}
-
-\newcommand\listofalgorithms{%
-    \if@twocolumn
-      \@restonecoltrue\onecolumn
-    \else
-      \@restonecolfalse
-    \fi
-    \pretextualchapter{\listalgorithmname}%
-    \onehalfspacing
-    \@starttoc{loa}%
-    \singlespacing
-    \if@restonecol\twocolumn\fi
-    }
+%\renewcommand \thealgorithm {\@arabic\c@algorithm}
 
 %---
 \makeatother
